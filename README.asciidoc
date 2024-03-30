@@ -158,3 +158,10 @@ npm run test:websites
 # Test a certain website
 npm run test:websites -- MangaDex
 ```
+
+#### Create bundle package
+Run below command to create bundle package.
+The bundle package will stored in app\nw\bundle.
+```sh
+npm run bundle --workspace app/nw
+```
