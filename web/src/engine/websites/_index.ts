@@ -716,6 +716,7 @@ export { default as CrunchyAnime } from './legacy/CrunchyAnime';
 export { default as CrunchyManga } from './legacy/CrunchyManga';
 export { default as Delitoon } from './legacy/Delitoon';
 export { default as DelitoonDE } from './legacy/DelitoonDE';
+export { default as DogEManga } from './legacy/DogEManga';
 export { default as DongManManhua } from './legacy/DongManManhua';
 export { default as EHentai } from './legacy/EHentai';
 export { default as EpikManga } from './legacy/EpikManga';
