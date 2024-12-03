@@ -74,6 +74,7 @@ export const Tags = {
     Accessibility: {
         toArray: GetCategoryTags,
         Title: TC.Tags_Accessibility,
+        DomainRotation: new Tag(TC.Tags_Accessibility, T.Tags_Accessibility_DomainRotation, T.Tags_Accessibility_DomainRotationDescription),
         RegionLocked: new Tag(TC.Tags_Accessibility, T.Tags_Accessibility_RegionLock, T.Tags_Accessibility_RegionLockDescription),
         RateLimited: new Tag(TC.Tags_Accessibility, T.Tags_Accessibility_RateLimit, T.Tags_Accessibility_RateLimitDescription),
     },
@@ -107,7 +108,3 @@ export const Tags = {
         Vietnamese: new Tag(TC.Tags_Language, T.Tags_Language_Vietnamese),
     },
 };
-
-export function filterByCategory(tags : Tag[], category) : Tag[] {
-    return tags.filter(tag => category.toArray().includes(tag));
-}

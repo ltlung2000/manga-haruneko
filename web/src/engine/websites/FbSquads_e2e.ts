@@ -6,8 +6,8 @@ const config = {
         title: 'Fleur Blanche Squads'
     },
     container: {
-        url: 'https://fbsquads.com/manga/polar-attraction/',
-        id: JSON.stringify({ post: '5169', slug: '/manga/polar-attraction/' }),
+        url: 'https://fbsquadx.com/manga/polar-attraction/',
+        id: JSON.stringify({ slug: '/manga/polar-attraction/' }),
         title: 'Polar Attraction',
     },
     child: {
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

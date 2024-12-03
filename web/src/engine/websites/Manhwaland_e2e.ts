@@ -6,13 +6,14 @@ const config: Config = {
         title: 'Manhwaland'
     },
     container: {
-        url: 'https://manhwaland.lat/manga/got-a-room-uncensored/',
+        url: 'https://manhwaland.host/manga/got-a-room-uncensored/',
         id: '/manga/got-a-room-uncensored/',
-        title: 'Got a Room? (Uncensored)'
+        title: 'Got a Room? UNCENSORED'
     },
     child: {
-        id: '/got-a-room-uncensored-chapter-1-a/',
-        title: 'Chapter 1a' },
+        id: '/got-a-room-uncensored-chapter-1-1/',
+        title: 'Chapter 1.1'
+    },
     entry: {
         index: 0,
         size: 143_057,
@@ -20,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

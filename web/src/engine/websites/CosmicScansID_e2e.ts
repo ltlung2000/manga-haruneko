@@ -6,7 +6,7 @@ const config = {
         title: 'Cosmic Scans ID'
     },
     container: {
-        url: 'https://cosmicscans.id/manga/eleceed/',
+        url: 'https://cosmic345.co/manga/eleceed/',
         id: '/manga/eleceed/',
         title: 'Eleceed'
     },
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

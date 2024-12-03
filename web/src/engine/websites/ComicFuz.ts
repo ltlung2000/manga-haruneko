@@ -8,6 +8,7 @@ import type { Priority } from '../taskpool/TaskPool';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import protobuf from 'protobufjs';
+import { FromHexString } from '../BufferEncoder';
 
 type MangaDetailResponse = {
     manga: ApiManga,
@@ -65,17 +66,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/manga/\\d+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/manga/\\d+$`).test(url);
 
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = new URL(url).pathname.split('/').pop();
-        const data = await this.fetchMangaDetail(id);
+        const id = new URL(url).pathname.split('/').at(-1);
+        const data = await this.FetchMangaDetail(id);
         return new Manga(this, provider, id, data.manga.title);
     }
 
-    private async fetchMangaDetail(titleId: string): Promise<MangaDetailResponse> {
+    private async FetchMangaDetail(titleId: string): Promise<MangaDetailResponse> {
         const uri = new URL('v1/manga_detail', this.apiUrl);
         const payload = {
             deviceInfo: {
@@ -83,11 +84,11 @@ export default class extends DecoratableMangaScraper {
             },
             mangaId: titleId
         };
-        const request = await this.createPROTORequest(uri, 'ComicFuz.MangaDetailRequest', payload);
+        const request = await this.CreatePROTORequest(uri, 'ComicFuz.MangaDetailRequest', payload);
         return FetchProto<MangaDetailResponse>(request, protoTypes, 'ComicFuz.MangaDetailResponse');
     }
 
-    private async createPROTORequest(uri: URL, messageProtoType: string, payload: unknown): Promise<Request> {
+    private async CreatePROTORequest(uri: URL, messageProtoType: string, payload: unknown): Promise<Request> {
         const root = await protobuf.parse(protoTypes, { keepCase: true }).root;
         const messageType = root.lookupType(messageProtoType);
         const message = messageType.encode(payload);
@@ -105,13 +106,13 @@ export default class extends DecoratableMangaScraper {
             },
             dayOfWeek: 0
         };
-        const request = await this.createPROTORequest(uri, 'ComicFuz.MangasByDayOfWeekRequest', payload);
+        const request = await this.CreatePROTORequest(uri, 'ComicFuz.MangasByDayOfWeekRequest', payload);
         const data = await FetchProto<MangasByDayOfWeekResponse>(request, protoTypes, 'ComicFuz.MangasByDayOfWeekResponse');
         return data.mangas.map(manga => new Manga(this, provider, manga.id.toString(), manga.title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await this.fetchMangaDetail(manga.Identifier);
+        const data = await this.FetchMangaDetail(manga.Identifier);
         return data.chapters.map(group => group.chapters.map(chapt => new Chapter(this, manga, chapt.id.toString(), chapt.title))).flat();
     }
 
@@ -128,30 +129,30 @@ export default class extends DecoratableMangaScraper {
                 paid: 0
             }
         };
-        const request = await this.createPROTORequest(uri, 'ComicFuz.MangaViewerRequest', payload);
+        const request = await this.CreatePROTORequest(uri, 'ComicFuz.MangaViewerRequest', payload);
         let data: MangaViewerResponse = undefined;
         try {
             data = await FetchProto<MangaViewerResponse>(request, protoTypes, 'ComicFuz.MangaViewerResponse');
-        } catch (error) {
+        } catch { // TODO: Do not use same message for generic errors
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         return data.pages
             .filter(page => page.image?.imageUrl && page.image.isExtraPage != true)
-            .map(page => new Page(this, chapter, new URL(page.image.imageUrl, this.imgUrl), { ...page.image }));
+            .map(page => new Page<ApiImage>(this, chapter, new URL(page.image.imageUrl, this.imgUrl), { ...page.image }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<ApiImage>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        const payload = page.Parameters as ApiImage;
+        const payload = page.Parameters;
         if (!payload.encryptionKey) return data;
         const encrypted = await data.arrayBuffer();
-        const decrypted = await this.decryptPicture(new Uint8Array(encrypted), payload);
+        const decrypted = await this.DecryptPicture(new Uint8Array(encrypted), payload);
         return Common.GetTypedData(decrypted);
     }
 
-    async decryptPicture(encrypted: Uint8Array, page: ApiImage): Promise<ArrayBuffer> {
-        const iv = Buffer.from(page.iv, 'hex');
-        const key = Buffer.from(page.encryptionKey, 'hex');
+    private async DecryptPicture(encrypted: Uint8Array, page: ApiImage): Promise<ArrayBuffer> {
+        const iv = FromHexString(page.iv);
+        const key = FromHexString(page.encryptionKey);
 
         const secretKey = await crypto.subtle.importKey(
             'raw',

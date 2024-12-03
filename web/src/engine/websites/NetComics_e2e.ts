@@ -1,6 +1,7 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const frenchconfig = {
+// CASE: French Locale
+new TestFixture({
     plugin: {
         id: 'netcomics',
         title: 'NetComics'
@@ -19,12 +20,10 @@ const frenchconfig = {
         size: 120_912,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-const frenchfixture = new TestFixture(frenchconfig);
-describe(frenchfixture.Name, () => frenchfixture.AssertWebsite());
-
-const englishconfig = {
+// CASE: English Locale
+new TestFixture({
     plugin: {
         id: 'netcomics',
         title: 'NetComics'
@@ -43,7 +42,4 @@ const englishconfig = {
         size: 118_616,
         type: 'image/jpeg'
     }
-};
-
-const englishfixture = new TestFixture(englishconfig);
-describe(englishfixture.Name, () => englishfixture.AssertWebsite());
+}).AssertWebsite();

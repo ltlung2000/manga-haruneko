@@ -6,7 +6,7 @@ const config = {
         title: 'CypherScans'
     },
     container: {
-        url: 'https://cypherscans.xyz/manga/solo-max-level-newbie/',
+        url: 'https://cypho-scans.xyz/manga/solo-max-level-newbie/',
         id: '/manga/solo-max-level-newbie/',
         title: 'Solo Max-Level Newbie'
     },
@@ -16,10 +16,9 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 1_001_428,
+        size: 823_040,
         type: 'image/webp'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

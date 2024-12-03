@@ -1,6 +1,7 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const fixtureSameSite = new TestFixture({
+// CASE: Same-Site
+new TestFixture({
     plugin: {
         id: 'manganato',
         title: 'Manganato'
@@ -19,10 +20,10 @@ const fixtureSameSite = new TestFixture({
         size: 364_983,
         type: 'image/jpeg'
     }
-});
-describe(fixtureSameSite.Name, () => fixtureSameSite.AssertWebsite());
+}).AssertWebsite();
 
-const fixtureCrossSite = new TestFixture({
+// CASE: Cross-Domain
+new TestFixture({
     plugin: {
         id: 'manganato',
         title: 'Manganato'
@@ -41,5 +42,4 @@ const fixtureCrossSite = new TestFixture({
         size: 94_319,
         type: 'image/jpeg'
     }
-});
-describe(fixtureCrossSite.Name, () => fixtureCrossSite.AssertWebsite());
+}).AssertWebsite();

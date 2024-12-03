@@ -5,8 +5,9 @@ const config = {
         id: 'tonizutoon',
         title: 'Tonizu Toon'
     },
+    /* Login required :/
     container: {
-        url: 'https://tonizu.com/manga/kullerin-imparatoricesi/',
+        url: 'https://tonizu.xyz/manga/kullerin-imparatoricesi/',
         id: JSON.stringify({ post: '2387', slug: '/manga/kullerin-imparatoricesi/' }),
         title: 'Küllerin İmparatoriçesi'
     },
@@ -18,8 +19,7 @@ const config = {
         index: 0,
         size: 173_580,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

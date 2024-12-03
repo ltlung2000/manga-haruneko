@@ -1,7 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const fixture = new TestFixture ({
-
+new TestFixture ({
     plugin: {
         id: 'shueishamangaplus',
         title: 'MANGA Plus by Shueisha'
@@ -20,5 +19,4 @@ const fixture = new TestFixture ({
         size: 159_401,
         type: 'image/jpeg'
     }
-});
-describe(fixture.Name, () => fixture.AssertWebsite());
+}).AssertWebsite();

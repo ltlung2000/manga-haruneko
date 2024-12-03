@@ -6,7 +6,7 @@ const config: Config = {
         title: 'KomikTap'
     },
     container: {
-        url: 'https://komiktap.me/manga/a-sober-and-quiet-mother/',
+        url: 'https://komiktap.info/manga/a-sober-and-quiet-mother/',
         id: '/manga/a-sober-and-quiet-mother/',
         title: 'A Sober And Quiet Mother'
     },
@@ -21,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

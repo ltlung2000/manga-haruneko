@@ -5,8 +5,9 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
-AddAntiScrapingDetection(async (dom) => {
-    return dom.querySelector('form#lsrecaptcha-form[action*="/.lsrecap/recaptcha?"]') ? FetchRedirection.Interactive : undefined;
+AddAntiScrapingDetection(async (invoke) => {
+    const result = await invoke<boolean>(`document.querySelector('form#lsrecaptcha-form[action*="/.lsrecap/recaptcha?"]') && true || false`);
+    return result ? FetchRedirection.Interactive : undefined;
 });
 
 @Madara.MangaCSS(/^{origin}\/readcomics\/[^/]+\/$/)
@@ -17,7 +18,7 @@ AddAntiScrapingDetection(async (dom) => {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangalink', 'MangaLink', 'https://manga-link.org', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Aggregator);
+        super('mangalink', 'MangaLink', 'https://link-manga.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

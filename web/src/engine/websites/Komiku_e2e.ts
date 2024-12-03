@@ -11,7 +11,7 @@ const config: Config = {
         title: '“Honyaku” no Sainou de Ore Dake ga Sekai wo Kaihen Dekiru Ken',
     },
     child: {
-        id: '/ch/honyaku-no-sainou-de-ore-dake-ga-sekai-wo-kaihen-dekiru-ken-chapter-01/',
+        id: '/honyaku-no-sainou-de-ore-dake-ga-sekai-wo-kaihen-dekiru-ken-chapter-01/',
         title: 'Chapter 1'
     },
     entry: {
@@ -21,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

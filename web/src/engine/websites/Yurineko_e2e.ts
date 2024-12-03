@@ -6,7 +6,7 @@ const config = {
         title: 'Yurineko'
     },
     container: {
-        url: 'https://yurineko.net/manga/3553',
+        url: 'https://yurineko.my/manga/3553',
         id: '3553',
         title: 'Ma Pháp Thiếu Nữ 201'
     },
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

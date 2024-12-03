@@ -8,11 +8,10 @@ import * as Common from './decorators/Common';
 @Common.ChaptersSinglePageCSS('div.manga_series_list table tbody tr td:first-of-type a')
 @Common.PagesSinglePageCSS('div.read_image div.mySlides img')
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangafreak', `MangaFreak`, 'https://mangafreak.net', Tags.Language.English, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('mangafreak', `MangaFreak`, 'https://mangafreak.me', Tags.Language.English, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -20,14 +19,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const uri = new URL(this.URI);
-        const request = new Request(uri.href);
-        this.URI.href = await FetchWindowScript(request, `window.location.origin`, 1500);
+        this.URI.href = await FetchWindowScript(new Request(this.URI), `window.location.origin`, 1500);
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return /https?:\/\/w+\d*.mangafreak.net\/Manga\/[^/]+$/.test(url);
+        return /https?:\/\/w+\d*.mangafreak.me\/Manga\/[^/]+$/.test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

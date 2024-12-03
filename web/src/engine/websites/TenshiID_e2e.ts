@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Tenshi.ID'
     },
     container: {
-        url: 'https://tenshi.id/komik/a-bad-person/',
+        url: 'https://tenshi01.id/komik/a-bad-person/',
         id: '/komik/a-bad-person/',
         title: 'A Bad Person'
     },
@@ -22,5 +22,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

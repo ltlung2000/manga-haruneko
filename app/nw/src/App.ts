@@ -1,27 +1,33 @@
-import yargs from 'yargs';
-import { RPCServer } from './rpc/Server';
-import { Contract } from './rpc/Contract';
+import { Command } from 'commander';
 import { IPC } from './ipc/InterProcessCommunication';
+import { RPCServer } from '../../src/rpc/Server';
+import { RemoteProcedureCallContract } from './ipc/RemoteProcedureCallContract';
+import { RemoteProcedureCallManager } from './ipc/RemoteProcedureCallManager';
 
-async function GetArgumentURL(): Promise<string|undefined> {
+type Manifest = {
+    url: string;
+    //'user-agent': undefined | string;
+    //'chromium-args': undefined | string;
+};
+
+type CLIOptions = {
+    origin?: string;
+}
+
+function ParseCLI(): CLIOptions {
     try {
-        /*
-        type Arguments = {
-            origin?: string;
-        }
-        */
-        const argv/*: Arguments*/ = await yargs(nw.App.argv).argv;
-        return argv.origin as string;
+        const argv = new Command()
+            .allowUnknownOption(true)
+            .option('--origin [url]', 'custom location from which the web-app shall be loaded')
+            .parse(nw.App.argv, { from: 'user' });
+        return argv.opts<CLIOptions>();
     } catch {
-        return undefined;
+        return {};
     }
 }
 
-async function GetDefaultURL(): Promise<string|undefined> {
+function GetDefaultURL(): string | undefined {
     try {
-        type Manifest = {
-            url?: string;
-        }
         return (nw.App.manifest as Manifest).url;
     } catch {
         return undefined;
@@ -29,13 +35,13 @@ async function GetDefaultURL(): Promise<string|undefined> {
 }
 
 async function OpenWindow() {
-
+    const argv = ParseCLI();
     const ipc = new IPC();
-    ipc.RPC = new RPCServer('/hakuneko', new Contract(ipc));
+    const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc));
+    new RemoteProcedureCallManager(rpc, ipc);
 
-    const url = await GetArgumentURL() ?? await GetDefaultURL();
-
-    const win = await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(url ?? 'about:blank', {
+    const url = argv.origin ?? GetDefaultURL() ?? 'about:blank';
+    const win = await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(url, {
         id: 'hakuneko',
         show: url ? false : true,
         frame: url ? false : true,
@@ -49,6 +55,12 @@ async function OpenWindow() {
     if(!url) {
         win.showDevTools();
     }
+
+    win.on('close', () => {
+        rpc.Stop();
+        nw.App.closeAllWindows();
+        nw.App.quit();
+    });
 }
 
 OpenWindow();

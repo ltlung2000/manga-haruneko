@@ -26,7 +26,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    private createPostRequest(uri: string, form: string) {
+    private CreatePostRequest(uri: string, form: string) {
         const request = new Request(uri, {
             body: form, method: 'POST', headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -38,11 +38,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/ver/`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/ver/`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga>{
-        const id = url.split('/').pop();
+        const id = url.split('/').at(-1);
         const request = new Request(url);
         const title = await FetchCSS<HTMLHeadingElement>(request, 'div.panel-heading h1');
         return new Manga(this, provider, id, title[0].textContent);
@@ -50,15 +50,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
+        const mangaList: Manga[] = [];
         for (let page = 0, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const uri = new URL('/manga/getMangasConsultResult', this.URI);
         const formManga = new URLSearchParams({
             'filter[generes][]': '-1',
@@ -71,10 +71,10 @@ export default class extends DecoratableMangaScraper {
             'd': '',
         }).toString();
 
-        const request = this.createPostRequest(uri.href, formManga);
+        const request = this.CreatePostRequest(uri.href, formManga);
         const data = await FetchCSS<HTMLAnchorElement>(request, 'a.manga-result');
         return data.map(element => {
-            const id = element.href.split('/').filter(part => part !== '').pop();
+            const id = element.href.split('/').filter(part => part !== '').at(-1);
             const title = element.querySelector<HTMLHeadingElement>('h4.ellipsed-text').textContent.trim();
             return new Manga(this, provider, id, title);
         });
@@ -96,5 +96,4 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchCSS<HTMLImageElement>(request, 'div.PagesContainer img.ImageContainer');
         return data.map(element => new Page(this, chapter, new URL('/page/getPageImage/?identification=' + element.id, request.url)));
     }
-
 }

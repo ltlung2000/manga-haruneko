@@ -6,7 +6,7 @@ const config = {
         title: 'HwagoID'
     },
     container: {
-        url: 'https://hwago.id/komik/dreaming-freedom/',
+        url: 'https://hwago01.xyz/komik/dreaming-freedom/',
         id: JSON.stringify({post: '1993', slug: '/komik/dreaming-freedom/' }),
         title: 'Dreaming Freedom'
     },
@@ -16,10 +16,9 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 690_350,
-        type: 'image/webp'
+        size: 327_953,
+        type: 'image/jpeg'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

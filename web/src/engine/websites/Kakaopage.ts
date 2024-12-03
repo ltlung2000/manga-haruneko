@@ -3,7 +3,6 @@ import icon from './Kakaopage.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchGraphQL } from '../platform/FetchProvider';
-import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type APIChapters = {
     contentHomeProductList: {
@@ -46,7 +45,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/content/[\\d]+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/content/[\\d]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

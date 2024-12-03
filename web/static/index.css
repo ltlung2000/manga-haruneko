@@ -1,4 +1,11 @@
+@font-face {
+    font-family: NotoColorEmoji-Flags;
+    unicode-range: U+1F1E6-1F1FF, U+1F3F4;                   /* Only use the flag emojis from this font by limiting the unicode range */
+    src: url('/NotoColorEmoji-Flags.woff2') format('woff2'); /* Created With: https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&text=🇦🇫🇦🇱🇩🇿🇦🇩🇦🇴🇦🇬🇦🇷🇦🇲🇦🇺🇦🇹🇦🇿🇧🇸🇧🇭🇧🇩🇧🇧🇧🇾🇧🇪🇧🇿🇧🇯🇧🇹🇧🇴🇧🇦🇧🇼🇧🇷🇧🇳🇧🇬🇧🇫🇧🇮🇨🇻🇰🇭🇨🇲🇨🇦🇨🇫🇹🇩🇨🇱🇨🇴🇰🇲🇨🇩🇨🇷🇨🇮🇭🇷🇨🇺🇨🇾🇨🇿🇰🇵🇨🇬🇩🇰🇩🇯🇩🇲🇩🇴🇪🇨🇪🇬🇸🇻🇬🇶🇪🇷🇪🇪🇸🇿🇪🇹🇫🇯🇫🇮🇫🇷🇬🇦🇬🇲🇬🇪🇩🇪🇬🇭🇬🇷🇬🇩🇬🇹🇬🇳🇬🇼🇬🇾🇭🇹🇭🇳🇭🇺🇮🇸🇮🇳🇮🇩🇮🇷🇮🇶🇮🇪🇮🇱🇮🇹🇯🇲🇯🇵🇯🇴🇰🇿🇰🇪🇰🇮🇰🇼🇰🇬🇱🇦🇱🇻🇱🇧🇱🇸🇱🇷🇱🇾🇱🇮🇱🇹🇱🇺🇲🇬🇲🇼🇲🇾🇲🇻🇲🇱🇲🇹🇲🇭🇲🇷🇲🇺🇲🇽🇫🇲🇲🇨🇲🇳🇲🇪🇲🇦🇲🇿🇲🇲🇳🇦🇳🇷🇳🇵🇳🇱🇳🇿🇳🇮🇳🇪🇳🇬🇲🇰🇳🇴🇴🇲🇵🇰🇵🇼🇵🇦🇵🇬🇵🇾🇵🇪🇵🇭🇵🇱🇵🇹🇶🇦🇰🇷🇲🇩🇷🇴🇷🇺🇷🇼🇰🇳🇱🇨🇻🇨🇼🇸🇸🇲🇸🇹🇸🇦🇸🇳🇷🇸🇸🇨🇸🇱🇸🇬🇸🇰🇸🇮🇸🇧🇸🇴🇿🇦🇸🇸🇪🇸🇱🇰🇸🇩🇸🇷🇸🇪🇨🇭🇸🇾🇹🇯🇹🇭🇹🇱🇹🇬🇹🇴🇹🇹🇹🇳🇹🇷🇹🇲🇹🇻🇺🇬🇺🇦🇦🇪🇬🇧🇹🇿🇺🇸🇺🇾🇺🇿🇻🇺🇻🇪🇻🇳🇾🇪🇿🇲🇿🇼🇪🇺🏴‍☠️🏳️‍🌈🏳️🏴 */
+}
+
 html, body, #app, #hakuneko-notice {
+    font-family: NotoColorEmoji-Flags, -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', Tahoma, Roboto, Verdana, Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -7,23 +14,29 @@ html, body, #app, #hakuneko-notice {
     overflow: hidden;
 }
 
-#hakuneko-notice {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: lightgrey;
-    text-align: center;
-    padding: 2em;
+#windowbar {
+    padding: 0.25em;
+    text-align: right;
+    background: whitesmoke;
     -webkit-app-region: drag;
+}
+
+#windowbar > a {
+    padding: 0.25em;
+    cursor: pointer;
+    font-size: 125%;
+    font-weight: bold;
+    text-decoration: none;
+    -webkit-app-region: no-drag;
+}
+
+#hakuneko-notice {
+    text-align: center;
+    background: lightgrey;
 }
 
 #hakuneko-notice a {
     text-decoration: none;
-}
-
-#windowbar {
-    position: absolute;
-    z-index:10;
-    top:0;
-    right: 0;
 }
 
 .container {

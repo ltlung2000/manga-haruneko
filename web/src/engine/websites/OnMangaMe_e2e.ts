@@ -12,7 +12,7 @@ const config = {
     },
     child: {
         id: '/manga/chainsaw-man/127',
-        title: '127 :  أنقذ ال اسا'
+        title: '127 : أنقذ ال اسا'
     },
     entry: {
         index: 1,
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

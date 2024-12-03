@@ -60,11 +60,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/title/`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/title/`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = url.split('/').pop();
+        const id = url.split('/').at(-1);
         const uri = new URL('/api/title/' + id, this.URI).href;
         const request = new Request(uri);
         const data = await FetchJSON<APISingleManga>(request);
@@ -72,15 +72,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangalist = [];
+        const mangalist: Manga[] = [];
         for (let page = 0, run = true; run; page+= mangasPerPage) {
-            const mangas = await this.getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangalist.push(...mangas) : run = false;
         }
         return mangalist;
     }
 
-    private async getMangasFromPage(offset: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async GetMangasFromPage(offset: number, provider: MangaPlugin): Promise<Manga[]> {
         const url = new URL('/api/search?limit=' + mangasPerPage + '&offset=' + offset, this.URI).href;
         const request = new Request(url);
         const data = await FetchJSON<APIMultiManga>(request);

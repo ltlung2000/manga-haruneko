@@ -14,7 +14,7 @@ const pageScript = `
     });
 `;
 
-@Common.MangaCSS(/^{origin}\/m\/[^/]+/, 'h1.show_title')
+@Common.MangaCSS(/^{origin}\/m\/[^/]+$/, 'h1.show_title')
 @Common.ChaptersSinglePageCSS('ul.row li a', Common.AnchorInfoExtractor(false, 'div.small, span'))
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
@@ -30,15 +30,15 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const token = (await FetchCSS<HTMLMetaElement>(new Request(new URL('/liste-mangas', this.URI)), 'meta[name="csrf-token"]'))[0].content;
-        const mangaList = [];
+        const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider, token);
+            const mangas = await this.GetMangasFromPage(page, provider, token);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList.distinct();
     }
 
-    async getMangasFromPage(page: number, provider: MangaPlugin, token: string): Promise<Manga[]> {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin, token: string): Promise<Manga[]> {
         const endpoint = new URL('/liste-mangas', this.URI);
         const request = new Request(endpoint, {
             method: 'POST',
@@ -51,10 +51,9 @@ export default class extends DecoratableMangaScraper {
             },
             body: `page=${page}`
         });
-        const result = await FetchJSON<APIMangas>(request);
-        const dom = new DOMParser().parseFromString(result.html, 'text/html');
+        const { html } = await FetchJSON<APIMangas>(request);
+        const dom = new DOMParser().parseFromString(html, 'text/html');
         const nodes = [...dom.querySelectorAll<HTMLAnchorElement>('a[class= ""]')];
         return nodes.map(manga => new Manga(this, provider, manga.pathname, manga.text.trim()));
     }
-
 }

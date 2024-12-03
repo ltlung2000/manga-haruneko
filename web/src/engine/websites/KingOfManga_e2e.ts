@@ -6,21 +6,19 @@ const config: Config = {
         title: 'KingOfManga'
     },
     container: {
-        url: 'https://kingofmanga.com/manga/8016922125-tale-of-a-scribe-who-retires-to-the-countryside/',
-        id: '/manga/8016922125-tale-of-a-scribe-who-retires-to-the-countryside/',
-        title: 'Tale of a Scribe Who Retires to the Countryside',
-        timeout: 20000
+        url: 'https://myshojo.com/comics/the-tale-of-the-tiger-girl/',
+        id: '/comics/the-tale-of-the-tiger-girl/',
+        title: 'The Tale of the Tiger Girl',
     },
     child: {
-        id: '/4195316865-tale-of-a-scribe-who-retires-to-the-countryside-0/',
-        title: 'الفصل 0'
+        id: '/the-tale-of-the-tiger-girl-chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
-        index: 1,
-        size: 331_939,
-        type: 'image/jpeg'
+        index: 2,
+        size: 115_416,
+        type: 'image/webp'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

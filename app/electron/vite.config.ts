@@ -7,7 +7,10 @@ export default defineConfig({
         emptyOutDir: false,
         outDir: resolve(__dirname, 'build'),
         lib: {
-            entry: resolve(__dirname, 'src', 'Main.ts'),
+            entry: [
+                resolve(__dirname, 'src', 'Main.ts'),
+                resolve(__dirname, 'src', 'ipc', 'Preload.ts'),
+            ],
             formats: [ 'cjs' ]
         },
         rollupOptions: {

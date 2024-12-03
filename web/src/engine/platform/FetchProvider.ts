@@ -1,50 +1,36 @@
-import { InternalError } from '../Error';
+import type { FetchProvider, ScriptInjection } from './FetchProviderCommon';
+import type { FeatureFlags } from '../FeatureFlags';
 import { Runtime } from './PlatformInfo';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
-import type { FetchProvider } from './FetchProviderCommon';
 import NodeWebkitFetchProvider from './nw/FetchProvider';
 import ElectronFetchProvider from './electron/FetchProvider';
+import GetIPC from './InterProcessCommunication';
 
-class HttpResponseError extends InternalError {
-    constructor(public readonly response: Response) {
-        super(response.statusText);
-    }
+let instance: FetchProvider;
 
-    public get status() {
-        return this.response.status;
-    }
-}
-
-export type { HttpResponseError };
-
-export function CreateFetchProvider(): FetchProvider {
-    return new PlatformInstanceActivator<FetchProvider>()
+export function SetupFetchProvider(featureFlags: FeatureFlags) {
+    instance = new PlatformInstanceActivator<FetchProvider>()
         .Configure(Runtime.NodeWebkit, () => new NodeWebkitFetchProvider())
-        .Configure(Runtime.Electron, () => new ElectronFetchProvider())
+        .Configure(Runtime.Electron, () => new ElectronFetchProvider(GetIPC()))
         .Create();
+    instance.Initialize(featureFlags);
 }
 
-export let Fetch: FetchProvider['Fetch'];
-export let FetchHTML: FetchProvider['FetchHTML'];
-export let FetchJSON: FetchProvider['FetchJSON'];
-export let FetchCSS: FetchProvider['FetchCSS'];
-export let FetchGraphQL: FetchProvider['FetchGraphQL'];
-export let FetchRegex: FetchProvider['FetchRegex'];
-export let FetchProto: FetchProvider['FetchProto'];
-export let FetchWindowCSS: FetchProvider['FetchWindowCSS'];
-export let FetchWindowScript: FetchProvider['FetchWindowScript'];
-export let FetchWindowPreloadScript: FetchProvider['FetchWindowPreloadScript'];
-
-export function SetupFetchProviderExports(instance: FetchProvider) {
-    instance.Initialize();
-    Fetch = instance.Fetch.bind(instance);
-    FetchHTML = instance.FetchHTML.bind(instance);
-    FetchJSON = instance.FetchJSON.bind(instance);
-    FetchCSS = instance.FetchCSS.bind(instance);
-    FetchGraphQL = instance.FetchGraphQL.bind(instance);
-    FetchRegex = instance.FetchRegex.bind(instance);
-    FetchProto = instance.FetchProto.bind(instance);
-    FetchWindowCSS = instance.FetchWindowCSS.bind(instance);
-    FetchWindowScript = instance.FetchWindowScript.bind(instance);
-    FetchWindowPreloadScript = instance.FetchWindowPreloadScript.bind(instance);
-}
+/** {@inheritDoc FetchProvider.Fetch} @see {@link FetchProvider.Fetch} */
+export const Fetch = (request: Request) => instance.Fetch(request);
+/** {@inheritDoc FetchProvider.FetchHTML} @see {@link FetchProvider.FetchHTML} */
+export const FetchHTML = (request: Request) => instance.FetchHTML(request);
+/** {@inheritDoc FetchProvider.FetchRegex} @see {@link FetchProvider.FetchRegex} */
+export const FetchRegex = (request: Request, regex: RegExp) => instance.FetchRegex(request, regex);
+/** {@inheritDoc FetchProvider.FetchJSON} @see {@link FetchProvider.FetchJSON} */
+export const FetchJSON = <T extends JSONElement>(request: Request) => instance.FetchJSON<T>(request);
+/** {@inheritDoc FetchProvider.FetchCSS} @see {@link FetchProvider.FetchCSS} */
+export const FetchCSS = <T extends HTMLElement>(request: Request, query: string) => instance.FetchCSS<T>(request, query);
+/** {@inheritDoc FetchProvider.FetchProto} @see {@link FetchProvider.FetchProto} */
+export const FetchProto = <T extends JSONElement>(request: Request, schema: string, messageTypePath: string) => instance.FetchProto<T>(request, schema, messageTypePath);
+/** {@inheritDoc FetchProvider.FetchGraphQL} @see {@link FetchProvider.FetchGraphQL} */
+export const FetchGraphQL = <T extends JSONElement>(request: Request, operationName: string, query: string, variables: JSONObject) => instance.FetchGraphQL<T>(request, operationName, query, variables);
+/** {@inheritDoc FetchProvider.FetchWindowScript} @see {@link FetchProvider.FetchWindowScript} */
+export const FetchWindowScript = <T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number) => instance.FetchWindowScript<T>(request, script, delay, timeout);
+/** {@inheritDoc FetchProvider.FetchWindowPreloadScript} @see {@link FetchProvider.FetchWindowPreloadScript} */
+export const FetchWindowPreloadScript = <T extends void | JSONElement>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay = 0, timeout = 60_000) => instance.FetchWindowPreloadScript<T>(request, preload, script, delay, timeout);

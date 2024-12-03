@@ -6,7 +6,7 @@ const config: Config = {
         title: 'MangaCross'
     },
     container: {
-        url: 'https://mangacross.jp/comics/watamaho/',
+        url: 'https://championcross.jp/series/50d8ea89cfc92/',
         id: 'watamaho',
         title: 'あの頃、私たちは魔法使いでした。'
     },
@@ -21,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

@@ -1,6 +1,6 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'mangatown',
         title: 'MangaTown',
@@ -13,15 +13,31 @@ const config: Config = {
     child: {
         id: '/manga/goblin_slayer/c078/',
         title: '78',
-        //timeout: 20_000,
-
     },
     entry: {
         index: 0,
         size: 236_152,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture({
+    plugin: {
+        id: 'mangatown',
+        title: 'MangaTown',
+    },
+    container: {
+        url: 'https://www.mangatown.com/manga/witch_hunter/',
+        id: '/manga/witch_hunter/',
+        title: 'Witch Hunter'
+    },
+    child: {
+        id: '/manga/witch_hunter/v12/c234/',
+        title: '234',
+    },
+    entry: {
+        index: 0,
+        size: 205_356,
+        type: 'image/jpeg'
+    }
+}).AssertWebsite();

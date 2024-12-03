@@ -4,7 +4,7 @@ import { type Chapter, DecoratableMangaScraper, Manga, type Page, type MangaPlug
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-//TODO : TEST/CODE LOGIN
+// TODO : TEST/CODE LOGIN
 
 const clearMangaLimitScript = `localStorage.removeItem('freeComicCount');`;
 
@@ -20,8 +20,8 @@ type APIComic = {
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const id = `/comic/ep_view/${anchor.dataset.comicId}/${anchor.dataset.episodeId}`;
     let title = anchor.querySelector('p.ep_title').textContent.trim();
-    const subtitle = anchor.querySelector('p.ep_stitle');
-    title += subtitle && subtitle.textContent.trim() != '' ? ' - ' + subtitle.textContent.trim() : '';
+    const subtitle = anchor.querySelector('p.ep_stitle')?.textContent.trim();
+    title += subtitle ? ' - ' + subtitle : '';
     return { id, title };
 }
 

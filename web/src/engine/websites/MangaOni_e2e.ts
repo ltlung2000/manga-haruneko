@@ -21,5 +21,4 @@ const config = {
         type: 'image/webp'
     }*/
 };
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

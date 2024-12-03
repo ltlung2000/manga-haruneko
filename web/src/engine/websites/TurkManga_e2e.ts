@@ -11,15 +11,14 @@ const config = {
         title: 'Mercenary Enrollment'
     },
     child: {
-        id: 'bolum-1',
-        title: 'Bölüm 0'
+        id: 'bolum-196',
+        title: 'Bölüm 195'
     },
     entry: {
-        index: 0,
-        size: 646_789,
+        index: 1,
+        size: 1_496_390,
         type: 'image/jpeg'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

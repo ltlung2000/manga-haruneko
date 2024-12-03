@@ -1,15 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './AsuraScans.webp';
-import { type Chapter, DecoratableMangaScraper, Page, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
-import { Fetch, FetchWindowScript } from '../platform/FetchProvider';
-
-type TSReader = source[];
-
-type source = {
-    images: string[];
-}
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 const excludes = [
     /panda_gif_large/i,
@@ -19,13 +13,34 @@ const excludes = [
     /EndDesignPSD/i
 ];
 
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@Common.ImageAjax()
+const chapterScript = `
+    new Promise( resolve => {
+        resolve( [...document.querySelectorAll('div h3 a[href*="/chapter/"]')].map(chapter => {
+            return {
+                id: chapter.pathname.replace(/(-[^-]+\\/chapter)/, '-/chapter'),
+                title : chapter.innerText.replace('\\n', ' ').trim()
+            };
+        }));
+    });
+`;
+
+const pagesScript = `[... document.querySelectorAll('div.items-center div div.center img')].map(image=> image.src);`;
+
+function MangaInfoExtractor(anchor: HTMLAnchorElement) {
+    return {
+        id: anchor.pathname.replace(/-[^-]+$/, '-'),
+        title: anchor.querySelector('div.items-center span.font-bold').textContent.trim()
+    };
+}
+
+@Common.MangasMultiPageCSS('/series?page={page}', 'div.grid a', 1, 1, 0, MangaInfoExtractor)
+@Common.ChaptersSinglePageJS(chapterScript, 500)
+@MangaStream.PagesSinglePageJS(excludes, pagesScript, 1000)
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('asurascans', 'Asura Scans', 'https://asuratoon.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English);
+        super('asurascans', 'Asura Scans', 'https://asuracomic.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -33,29 +48,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const request = new Request(this.URI.href);
-        this.URI.href = await FetchWindowScript<string>(request, 'window.location.origin');
+        this.URI.href = await FetchWindowScript<string>(new Request(this.URI), 'window.location.origin');
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/manga/[^/]+/$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/series/[^/]+$`).test(url);
     }
 
     public override async FetchManga(this: DecoratableMangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
-        return MangaStream.FetchMangaCSS.call(this, provider, url);
+        const manga = await MangaStream.FetchMangaCSS.call(this, provider, url.replace(/-[^-]+$/, '-'), 'title');
+        return new Manga(this, provider, manga.Identifier, manga.Title.replace(' - Asura Scans', '').trim());
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        let images: string[] = [];
-        try {
-            const response = await Fetch(new Request(new URL(chapter.Identifier, this.URI).href));
-            const data = await response.text();
-            const tsreader: TSReader = JSON.parse(data.match(/"sources":(\[[^;]+\]}\])/m)[1]);
-            images = tsreader.shift().images.filter(link => !excludes.some(rgx => rgx.test(link)));
-            return images.map(image => new Page(this, chapter, new URL(image)));
-        } catch (error) {
-            return MangaStream.FetchPagesSinglePageCSS.call(this, chapter, excludes, 'div#readerarea p img');
-        }
-
-    }
 }

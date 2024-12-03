@@ -7,7 +7,7 @@ const config = {
     },
     /* NEED LOGIN FOR EVERYTHING
     container: {
-        url: 'https://grimelek.co/seri/revenge-by-harem/',
+        url: 'https://grimelek.one/seri/revenge-by-harem/',
         id: JSON.stringify({ slug: '/seri/revenge-by-harem/' }),
         title: 'Revenge By Harem'
     },
@@ -22,5 +22,4 @@ const config = {
     }*/
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

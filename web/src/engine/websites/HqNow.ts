@@ -3,7 +3,6 @@ import icon from './HqNow.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchGraphQL } from '../platform/FetchProvider';
-import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 
 type APIMangas = {
     getHqsByNameStartingLetter: APIManga[],
@@ -45,7 +44,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/hq/[\\d]+`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/hq/[\\d]+`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {

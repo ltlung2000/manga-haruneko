@@ -14,6 +14,7 @@ import pt_PT from './locales/pt_PT';
 import th_TH from './locales/th_TH';
 import tr_TR from './locales/tr_TR';
 import zh_CN from './locales/zh_CN';
+import crowdinPseudoLanguage from './locales/zu_ZA';
 
 /**
  * List of all available localizations in the application.
@@ -34,12 +35,14 @@ const resources: Record<LocaleID, ILocale> = {
     Locale_zhCN: CreateLocale(zh_CN),
 };
 
+const crowdinPseudoResource = CreateLocale(crowdinPseudoLanguage);
+
 function Format(this: string, ...params: string[]) {
     let text = this.toString();
     for(const index in params) {
         text = text.replace(`{${index}}`, params[index]);
         /*
-        const regex = new RegExp(`\\{${index}\\}`, 'g');
+        const regex = new RegExpSafe(`\\{${index}\\}`, 'g');
         text = text.replace(regex, params[index]);
         */
     }
@@ -64,8 +67,10 @@ export function CreateLocale(resource: VariantResource): ILocale {
 export function GetLocale(code?: LocaleID): ILocale {
     if(code) {
         return resources[code];
-    } else {
-        const active = HakuNeko.SettingsManager.OpenScope(Scope).Get<Choice>(Key.Language).Value as LocaleID;
-        return resources[active];
     }
+    if(HakuNeko?.FeatureFlags?.CrowdinTranslationMode?.Value) {
+        return crowdinPseudoResource;
+    }
+    const active = HakuNeko.SettingsManager.OpenScope(Scope).Get<Choice>(Key.Language).Value as LocaleID;
+    return resources[active];
 }

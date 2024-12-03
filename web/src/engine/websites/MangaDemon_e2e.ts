@@ -6,20 +6,19 @@ const config = {
         title: 'MangaDemon'
     },
     container: {
-        url: 'https://demonreader.org/manga/Martial-Peak-VA50',
-        id: '/manga/Martial-Peak-VA50',
+        url: 'https://demonicscans.org/manga/Martial-Peak',
+        id: '/manga/Martial-Peak',
         title: 'Martial Peak'
     },
     child: {
-        id: '/manga/Martial-Peak/chapter/3670-VA50',
+        id: '/chaptered.php?manga=1&chapter=3670',
         title: '3670'
     },
     entry: {
         index: 0,
-        size: 189_790,
+        size: 138_422,
         type: 'image/jpeg'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

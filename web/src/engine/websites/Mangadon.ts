@@ -6,6 +6,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
+import { BufferToHexString } from '../BufferEncoder';
 
 type APIResult = {
     data: APIItem[] | APIItem,
@@ -42,6 +43,7 @@ export default class extends DecoratableMangaScraper {
     private readonly partsWidth = 240;
     private readonly partsHeight = 240;
     private readonly decodeKey = 'wwwave-bago';
+
     public constructor() {
         super('mangadon', 'Mangadon', 'https://mangadon.me', Tags.Media.Manhwa, Tags.Language.French, Tags.Source.Official);
     }
@@ -51,26 +53,23 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/catalogs/show\\?tb=\\d+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/catalogs/show\\?tb=\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = new URL(url).searchParams.get('tb');
-        const request = new Request(new URL(`/api/v1/comics/${mangaid}`, this.URI));
-        const { data } = await FetchJSON<APIResult>(request);
+        const { data } = await FetchJSON<APIResult>(new Request(new URL(`/api/v1/comics/${mangaid}`, this.URI)));
         const title = (data as APIItem).attributes.name.trim();
         return new Manga(this, provider, mangaid, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL(`/api/v1/comics`, this.URI));
-        const { data } = await FetchJSON<APIResult>(request);
+        const { data } = await FetchJSON<APIResult>(new Request(new URL(`/api/v1/comics`, this.URI)));
         return (data as APIItem[]).map(manga => new Manga(this, provider, manga.id, manga.attributes.name.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(`/api/v1/comics/${manga.Identifier}?includes%5B%5D=episodes`, this.URI));
-        const { included } = await FetchJSON<APIResult>(request);
+        const { included } = await FetchJSON<APIResult>(new Request(new URL(`/api/v1/comics/${manga.Identifier}?includes%5B%5D=episodes`, this.URI)));
         return included.map(chapter => new Chapter(this, manga, chapter.id, chapter.attributes.name.trim()));
     }
 
@@ -84,14 +83,13 @@ export default class extends DecoratableMangaScraper {
         if (!cookies['CloudFront-Key-Pair-Id']) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
-        return (data as APIItem).attributes.pages.map(page => new Page(this, chapter, new URL(page.path, this.imgCDN), { ...cookies }));
+        return (data as APIItem).attributes.pages.map(page => new Page<CookieSigner>(this, chapter, new URL(page.path, this.imgCDN), { ...cookies }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<CookieSigner>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await this.imageTaskPool.Add(async () => {
 
-            //Compute cookie data for image request, otherwise we got a 403
-            const cookiesData = page.Parameters as CookieSigner;
+            const cookiesData = page.Parameters;
             const cookies: string[] = [];
             Object.keys(cookiesData).forEach(name => {
                 const value = cookiesData[name];
@@ -117,8 +115,12 @@ export default class extends DecoratableMangaScraper {
             const numPieces = numCols * numLines;
             const m: string[] = [];
 
+            async function sha256(text: string): Promise<string> {
+                return BufferToHexString(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)));
+            }
+
             for (let i = 0; i <= numPieces - 1; i++) {
-                m.push(await this.sha256(''.concat(i.toString(), '_').concat(this.decodeKey)));
+                m.push(await sha256(''.concat(i.toString(), '_').concat(this.decodeKey)));
             }
             const v = Array.from(m).sort();
             const f: number[] = [];
@@ -128,17 +130,12 @@ export default class extends DecoratableMangaScraper {
 
             for (let index = 0; index <= numPieces - 1; index++) {
                 const value = f[index];
-                const r = this.partsWidth * (index % numCols);
-                const l = this.partsHeight * Math.floor(index / numCols);
-                const d = this.partsWidth * (value % numCols);
-                const m = this.partsHeight * Math.floor(value / numCols);
-                ctx.drawImage(image, r, l, this.partsWidth, this.partsHeight, d, m, this.partsWidth, this.partsHeight);
+                const sourceX = this.partsWidth * (index % numCols);
+                const sourceY = this.partsHeight * Math.floor(index / numCols);
+                const destX = this.partsWidth * (value % numCols);
+                const destY = this.partsHeight * Math.floor(value / numCols);
+                ctx.drawImage(image, sourceX, sourceY, this.partsWidth, this.partsHeight, destX, destY, this.partsWidth, this.partsHeight);
             }
         });
-
-    }
-
-    async sha256(str: string): Promise<string> {
-        return Buffer.from(await crypto.subtle.digest('SHA-256', Buffer.from(str))).toString('hex');
     }
 }

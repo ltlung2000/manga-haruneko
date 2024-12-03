@@ -1,6 +1,7 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const fixtureChapter = new TestFixture({
+// CASE: Provided in Chapters
+new TestFixture({
     plugin: {
         id: 'piccoma',
         title: 'Piccoma'
@@ -19,10 +20,10 @@ const fixtureChapter = new TestFixture({
         size: 531_180,
         type: 'image/png'
     } */
-});
-describe(fixtureChapter.Name, () => fixtureChapter.AssertWebsite());
+}).AssertWebsite();
 
-const fixtureVolume = new TestFixture({
+// CASE: Provided in Volumes
+new TestFixture({
     plugin: {
         id: 'piccoma',
         title: 'Piccoma'
@@ -41,5 +42,4 @@ const fixtureVolume = new TestFixture({
         size: 1_012_662,
         type: 'image/png'
     } */
-});
-describe(fixtureVolume.Name, () => fixtureVolume.AssertWebsite());
+}).AssertWebsite();

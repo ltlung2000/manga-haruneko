@@ -1,17 +1,13 @@
-import type { JSHandle, Page } from 'puppeteer-core';
+import { describe, it, expect } from 'vitest';
+import type { JSHandle } from 'puppeteer-core';
+import { PuppeteerFixture } from '../../../test/PuppeteerFixture';
 import type { ISettings } from './SettingsManager';
 import { Key } from './SettingsGlobal';
 
-export class TestFixture {
-
-    private readonly page: Page;
-
-    constructor() {
-        this.page = global.PAGE as Page;
-    }
+export class TestFixture extends PuppeteerFixture {
 
     public async GetRemoteGlobalSettings(): Promise<JSHandle<ISettings>> {
-        return this.page.evaluateHandle(async () => {
+        return this.EvaluateHandle(async () => {
             return window.HakuNeko.SettingsManager.OpenScope();
         });
     }

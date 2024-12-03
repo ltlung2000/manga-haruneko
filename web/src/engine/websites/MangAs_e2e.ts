@@ -6,7 +6,7 @@ const config = {
         title: 'MangAs'
     },
     container: {
-        url: 'https://mangas.in/manga/one-piece',
+        url: 'https://m440.in/manga/one-piece',
         id: '/manga/one-piece',
         title: 'One Piece'
     },
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

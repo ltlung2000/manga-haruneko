@@ -6,7 +6,7 @@ const config = {
         title: 'Manjanoon'
     },
     container: {
-        url: 'https://manjanoon.net/manga/nn-holding-you-captive/',
+        url: 'https://vrnoin.site/manga/nn-holding-you-captive/',
         id: '/manga/nn-holding-you-captive/',
         title: 'Holding You Captive'
     },
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

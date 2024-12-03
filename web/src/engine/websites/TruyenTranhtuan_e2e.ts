@@ -6,7 +6,7 @@ const config = {
         title: 'TruyenTranhtuan'
     },
     container: {
-        url: 'https://truyentuan.com/huyen-thoai-giao-si-tro-lai/',
+        url: 'https://truyentuan.xyz/huyen-thoai-giao-si-tro-lai/',
         id: '/huyen-thoai-giao-si-tro-lai/',
         title: 'Huyền Thoại Giáo Sĩ Trở Lại'
     },
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

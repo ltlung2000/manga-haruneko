@@ -1,12 +1,12 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-const config = {
+const configGlobal: Config = {
     plugin: {
         id: 'copymanga',
         title: 'CopyManga'
     },
     container: {
-        url: 'https://www.copymanga.site/comic/zhanvmeizhabao',
+        url: 'https://www.copymanga.tv/comic/zhanvmeizhabao',
         id: 'zhanvmeizhabao',
         title: '渣女沒渣報'
     },
@@ -16,10 +16,16 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 217_474,
-        type: 'image/jpeg'
+        size: 156_108,
+        type: 'image/webp'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+// CASE: No Region (Global)
+new TestFixture(configGlobal).AssertWebsite();
+
+const configChinaMainland = { ...configGlobal };
+configChinaMainland.container.url = 'https://www.mangacopy.com/comic/zhanvmeizhabao';
+
+// CASE: Region China
+new TestFixture(configChinaMainland).AssertWebsite();

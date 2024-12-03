@@ -36,16 +36,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangalist = [];
+        const mangalist: Manga[] = [];
         const categories = ['/series', '/anthologies', '/issues', '/doujins'];
         for (const category of categories) {
-            const mangas = await this.getMangasFromCategory(provider, category);
+            const mangas = await this.GetMangasFromCategory(provider, category);
             mangas.length > 0 ? mangalist.push(...mangas) : false;
         }
         return mangalist;
     }
 
-    async getMangasFromCategory(provider: MangaPlugin, category: string): Promise<Manga[]> {
+    private async GetMangasFromCategory(provider: MangaPlugin, category: string): Promise<Manga[]> {
         const mangas = [];
         for (let i = 1, run = true; run; i++) {
             try {
@@ -57,7 +57,7 @@ export default class extends DecoratableMangaScraper {
                     }
                 }
             }
-            catch (error) {
+            catch { // TODO: Do not return incomplete list for generic errors
                 run = false;
             }
         }

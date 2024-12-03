@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configVolume = {
+new TestFixture({
     plugin: {
         id: 'mangafire',
         title: 'MangaFire'
@@ -12,19 +12,16 @@ const configVolume = {
     },
     child: {
         id: JSON.stringify({ itemid: '140775', itemtype: 'volume', language: 'en' }),
-        title: 'Vol 38:'
+        title: 'Vol 38: (en)'
     },
     entry: {
         index: 2,
-        size: 1_167_731,
-        type: 'image/png'
+        size: 156_390,
+        type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-const fixtureVolume = new TestFixture(configVolume);
-describe(fixtureVolume.Name, () => fixtureVolume.AssertWebsite());
-
-const configChapter = {
+new TestFixture({
     plugin: {
         id: 'mangafire',
         title: 'MangaFire'
@@ -36,14 +33,11 @@ const configChapter = {
     },
     child: {
         id: JSON.stringify({ itemid: '1552876', itemtype: 'chapter', language: 'en' }),
-        title: 'Chap 326: To Be A Samurai'
+        title: 'Chap 326: To Be A Samurai (en)'
     },
     entry: {
         index: 0,
         size: 353_323,
         type: 'image/jpeg'
     }
-};
-
-const fixtureChapter = new TestFixture(configChapter);
-describe(fixtureChapter.Name, () => fixtureChapter.AssertWebsite());
+}).AssertWebsite();

@@ -1,5 +1,4 @@
 import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
-import type { MediaContainer } from '../../../engine/providers/MediaPlugin';
 import type { Bookmark } from '../../../engine/providers/Bookmark';
 import S from '../services/StateService';
 
@@ -82,9 +81,6 @@ const styles: ElementStyles = css`
 const listitem: ViewTemplate<Bookmark> = html`
     <li class=${model => model?.IsOrphaned ? 'missing' : ''} @click=${(model, ctx) => ctx.parent.SelectEntry(model)}>
         <img class="icon" src="${model => model.Parent.Icon}"></img>
-        <!--
-        <img class="icon" src="${model => model.Icon}"></img>
-        -->
         <div>${model => model.Title}</div>
     </li>
 `;
@@ -92,10 +88,10 @@ const listitem: ViewTemplate<Bookmark> = html`
 const template: ViewTemplate<BookmarkList> = html`
     <div id="header">
         <div id="title">${() => S.Locale.Frontend_FluentCore_BookmarkList_Heading()}</div>
-        <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.entries?.length ?? '┄'}</div>
+        <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.Entries?.length ?? '┄'}</div>
     </div>
     <div id="searchcontrol">
-        <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
+        <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
     <ul id="entries">
         ${repeat(model => model.filtered, listitem)}
@@ -107,24 +103,24 @@ export class BookmarkList extends FASTElement {
 
     override connectedCallback(): void {
         super.connectedCallback();
-        HakuNeko.BookmarkPlugin.EntriesUpdated.Subscribe(this.BookmarksChanged);
+        HakuNeko.BookmarkPlugin.Entries.Subscribe(this.BookmarksChanged);
         this.BookmarksChanged();
     }
 
     override disconnectedCallback(): void {
         super.disconnectedCallback();
-        HakuNeko.BookmarkPlugin.EntriesUpdated.Unsubscribe(this.BookmarksChanged);
+        HakuNeko.BookmarkPlugin.Entries.Unsubscribe(this.BookmarksChanged);
     }
 
-    @observable entries: MediaContainer<Bookmark>[] = [];
-    entriesChanged() {
+    @observable Entries: Bookmark[] = [];
+    EntriesChanged() {
         this.FilterEntries();
     }
-    @observable match: (text: string) => boolean = () => true;
-    matchChanged() {
+    @observable Match: (text: string) => boolean = () => true;
+    MatchChanged() {
         this.FilterEntries();
     }
-    @observable filtered: MediaContainer<Bookmark>[] = [];
+    @observable filtered: Bookmark[] = [];
     @observable updating = false;
 
     public SelectEntry(entry: Bookmark) {
@@ -132,10 +128,10 @@ export class BookmarkList extends FASTElement {
     }
 
     public FilterEntries() {
-        this.filtered = this.entries.filter(entry => this.match(entry.Title)).slice(0, 250); /* TODO: virtual scrolling */
+        this.filtered = this.Entries.filter(entry => this.Match(entry.Title)).slice(0, 500); /* TODO: virtual scrolling */
     }
 
-    private BookmarksChanged = function() {
-        this.entries = HakuNeko.BookmarkPlugin.Entries.slice();
+    private BookmarksChanged = function(this: BookmarkList) {
+        this.Entries = HakuNeko.BookmarkPlugin.Entries.Value.slice();
     }.bind(this);
 }

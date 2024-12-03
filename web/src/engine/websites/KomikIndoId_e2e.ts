@@ -6,7 +6,7 @@ const config: Config = {
         title: 'KomikIndoId'
     },
     container: {
-        url: 'https://komikindo.tv/komik/50kg-cinderella/',
+        url: 'https://komikindo.wtf/komik/50kg-cinderella/',
         id: '/komik/50kg-cinderella/',
         title: '-50kg Cinderella'
     },
@@ -21,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

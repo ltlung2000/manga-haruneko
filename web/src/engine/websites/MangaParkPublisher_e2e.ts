@@ -12,7 +12,7 @@ const config = {
     },
     child: {
         id: '606536',
-        title: '1 - 第1話①'
+        title: '第1話①'
     },
     entry: {
         index: 0,
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

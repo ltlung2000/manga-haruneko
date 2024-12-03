@@ -12,7 +12,6 @@
         Pagination,
     } from 'carbon-components-svelte';
     import {
-        CertificateCheck,
         Settings,
         Star,
         StarFilled,
@@ -40,29 +39,26 @@
             name: item.Title,
             website: new URL(item.URI),
             image: item.Icon,
-            tags: item.Tags,
+            tags: item.Tags.Value,
             overflow: item,
             favorite: item,
         };
     }
 
-    export let isPluginModalOpen = false;
-    let pagination = {
-        totalItems: 0,
-        page: 1,
-        pageSize: 5,
-        pageSizes: [5, 10, 20],
-    };
+    interface Props {
+        isPluginModalOpen?: boolean;
+    }
 
-    let isSettingOpen = false;
-    let pluginToConfigure: MediaContainer<MediaChild>;
+    let { isPluginModalOpen = $bindable(false) }: Props = $props();
+
+    let pluginToConfigure: MediaContainer<MediaChild> = $state();
 
     const langTags = Tags.Language.toArray();
     const typeTags = Tags.Media.toArray();
     const otherTags = [...Tags.Source.toArray(), ...Tags.Rating.toArray()];
 
-    let pluginNameFilter = '';
-    let pluginTagsFilter: Tag[] = [];
+    let pluginNameFilter = $state('');
+    let pluginTagsFilter: Tag[] = $state([]);
 
     function addTagFilter(tag: Tag) {
         if (!pluginTagsFilter.includes(tag)) {
@@ -73,10 +69,8 @@
         pluginTagsFilter = pluginTagsFilter.filter((value) => tag !== value);
     }
 
-    let filterFavorites = false;
-    let filteredPluginlist = [];
-    $: {
-        filteredPluginlist = HakuNeko.PluginController.WebsitePlugins.filter(
+    let filterFavorites = $state(false);
+    let filteredPluginlist: ReturnType<typeof createDataRow>[] = $derived(HakuNeko.PluginController.WebsitePlugins.filter(
             (plugin) => {
                 let rejectconditions: Array<boolean> = [];
                 if (
@@ -86,17 +80,22 @@
                     ) === -1
                 )
                     rejectconditions.push(true);
-                if (plugin.Tags) {
+                if (plugin.Tags.Value) {
                     pluginTagsFilter.forEach((tagfilter) => {
-                        if (!plugin.Tags.includes(tagfilter))
+                        if (!plugin.Tags.Value.includes(tagfilter))
                             rejectconditions.push(true);
                     });
                 }
                 return !rejectconditions.length;
             },
-        ).map((item) => createDataRow(item));
-        pagination.totalItems = filteredPluginlist.length;
-    }
+        ).map((item) => createDataRow(item)));
+        
+    // Pagination
+    let page = $state(1);
+    let pageSize = $state(10);
+    let pageSizes = $state([5, 10, 20]);
+    let totalItems = $derived(filteredPluginlist.length);
+
 </script>
 
 <Modal
@@ -170,8 +169,8 @@
             { key: 'tags', value: 'Tags' },
             { key: 'overflow', empty: true },
         ]}
-        bind:pageSize={pagination.pageSize}
-        bind:page={pagination.page}
+        pageSize={pageSize}
+        page={page}
         rows={filteredPluginlist}
         on:click:row={(event) => {
             $selectedPlugin = event.detail.overflow;
@@ -187,7 +186,8 @@
                 />
             </ToolbarContent>
         </Toolbar>
-        <svelte:fragment slot="cell-header" let:header>
+    <!-- @migration-task: migrate this slot by hand, `cell-header` is an invalid identifier -->
+    <svelte:fragment slot="cell-header" let:header>
             {#if header.key === 'favorite'}
                 <Button
                     kind="secondary"
@@ -202,10 +202,12 @@
                 {header.value}
             {/if}
         </svelte:fragment>
-        <div class="plugin-row" slot="cell" let:cell in:fade>
-            {#if cell.key === 'favorite'}
+        <!-- @migration-task: migrate this slot by hand, `cell` is an invalid identifier -->
+        <div class="plugin-row" slot="cell" let:cell={{key,value}} in:fade>
+            {#if key === 'favorite'}
                 <Button
                     kind="ghost"
+                    size="small"
                     iconDescription="Add to favorites"
                     icon={true ? StarFilled : Star}
                     on:click={(e) => {
@@ -213,19 +215,19 @@
                         e.stopPropagation();
                     }}
                 />
-            {:else if cell.key === 'website'}
-                <OutboundLink href={cell.value}
-                    >{cell.value.hostname}
+            {:else if key === 'website'}
+                <OutboundLink href={value}
+                    >{value.hostname}
                 </OutboundLink>
-            {:else if cell.key === 'image'}
-                <img src={cell.value} alt="Logo" height="24" />
-            {:else if cell.key === 'tags'}
-                {#each cell.value as item}
+            {:else if key === 'image'}
+                <img src={value} alt="Logo" height="24" />
+            {:else if key === 'tags'}
+                {#each value as item}
                     <Chip category={item.Category} label={item.Title} />
                 {/each}
-            {:else if cell.key === 'overflow'}
+            {:else if key === 'overflow'}
                 <div class=" action-cell">
-                    {#if [...cell.value.Settings].length > 0}
+                    {#if [...value.Settings].length > 0}
                         <Button
                             size="small"
                             kind="secondary"
@@ -233,8 +235,7 @@
                             icon={Settings}
                             iconDescription="Connector's settings"
                             on:click={(e) => {
-                                pluginToConfigure = cell.value;
-                                isSettingOpen = true;
+                                pluginToConfigure = value;
                                 e.stopPropagation();
                             }}
                         />
@@ -247,18 +248,18 @@
                         iconDescription="Open website URL"
                         on:click={(e) => {
                             e.stopPropagation();
-                            window.open(cell.value.URI);
+                            window.open(value.URI);
                         }}
                     />
                 </div>
-            {:else}{cell.value}{/if}
+            {:else}{value}{/if}
         </div>
     </DataTable>
     <Pagination
-        bind:pageSize={pagination.pageSize}
-        bind:page={pagination.page}
-        totalItems={pagination.totalItems}
-        pageSizes={pagination.pageSizes}
+        bind:pageSize={pageSize} 
+        pageSizes={pageSizes} 
+        bind:page={page}
+        {totalItems}
     />
 </Modal>
 
@@ -267,12 +268,10 @@
         id="pluginSettingsModal"
         size="lg"
         hasScrollingContent
-        bind:open={isSettingOpen}
+        open
         passiveModal
         modalHeading="Settings"
-        on:click:button--secondary={() => (isSettingOpen = false)}
-        on:open
-        on:close
+        on:close={() => (pluginToConfigure = undefined)}
         hasForm
     >
         <SettingsViewer settings={[...pluginToConfigure.Settings]} />

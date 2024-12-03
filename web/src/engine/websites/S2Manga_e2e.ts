@@ -6,7 +6,7 @@ const config = {
         title: 'S2Manga'
     },
     container: {
-        url: 'https://www.s2manga.com/manga/the-villainous-moriarty-in-me/',
+        url: 'https://s2manga.com/manga/the-villainous-moriarty-in-me/',
         id: JSON.stringify({ post: '76793', slug: '/manga/the-villainous-moriarty-in-me/' }),
         title: 'The Villainous Moriarty in Me'
     },
@@ -16,10 +16,9 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 369_370,
+        size: 294_546,
         type: 'image/jpeg'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

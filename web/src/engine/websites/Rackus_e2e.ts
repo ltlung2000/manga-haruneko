@@ -7,12 +7,12 @@ const config: Config = {
     },
     container: {
         url: 'https://rackusreads.com/manga/the-female-lead-acquires-cheat-skills/',
-        id: JSON.stringify({ post: '101', slug: '/manga/the-female-lead-acquires-cheat-skills/' }),
+        id: '/manga/the-female-lead-acquires-cheat-skills/',
         title: 'The Female Lead Acquires Cheat Skills'
     },
     child: {
-        id: '/manga/the-female-lead-acquires-cheat-skills/chapter-01/',
-        title: 'Chapter 01'
+        id: '/the-female-lead-acquires-cheat-skills-chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
@@ -21,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

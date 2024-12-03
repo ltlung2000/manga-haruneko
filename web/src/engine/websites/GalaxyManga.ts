@@ -1,88 +1,54 @@
 import { Tags } from '../Tags';
 import icon from './GalaxyManga.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
 
-type APIManga = {
-    status: boolean,
-    message: string,
-    serie: {
-        id: number,
-        title:string
-    }
+function ChapterInfoExtractor(element: HTMLAnchorElement) {
+    return {
+        id: element.pathname,
+        title: element.querySelector<HTMLSpanElement>('div > div > span').innerText,
+    };
 }
 
-type APIMangas = {
-    data: {
-        id: number,
-        title: string
-    }[]
-}
+// List of composed references from their discord server
+const origins = [
+    //'ayoub-zrr.xyz', // => currently dead
+    //'flixscans.com', // => currently dead
+    'https://galaxymanga.net',
+    'https://galaxymanga.org',
+    'https://gxcomic.xyz',
+    'https://josephbent.com',
+    //'snowscans.com', // => re-branded as affiliate website
+];
 
-type APIChapter = {
-    id: number,
-    title: string,
-    name: string
-}
-
-type APIPages = {
-    chapter: {
-        chapterData: {
-            webtoon: string[]
-        }
-    }
-}
-
+@Common.MangaCSS(new RegExp(`^({origin}|${origins.join('|')})/series/\\d+-\\d+-[^/]+$`), 'main section > div > div.font-semibold')
+@Common.ChaptersSinglePageCSS('main section div.overflow-y-auto div.grid > a', ChapterInfoExtractor)
+@Common.PagesSinglePageCSS('main > section > div > img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiurl = 'https://api.flixscans.com';
-
     public constructor() {
-        super('galaxymanga', 'Galaxy Manga', 'https://flixscans.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
+        super('galaxymanga', 'Galaxy Manga', 'https://galaxymanga.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/series/[^/]+$`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = new URL(url).pathname.split('-')[1];
-        const request = new Request(`${this.apiurl}/api/v1/webtoon/series/${id}`);
-        const { serie } = await FetchJSON<APIManga>(request);
-        return new Manga(this, provider, serie.id.toString(), serie.title);
+    public override async Initialize(): Promise<void> {
+        await Promise.allSettled(origins.map(async origin => {
+            const uri = new URL((await fetch(origin, { redirect: 'follow' })).url);
+            this.URI.href = uri.origin === origin && uri.pathname !== '/' ? origin : this.URI.href;
+        }));
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        const mangaList: Manga[] = [];
+        for (const category of [ 'manga', 'action', 'romance' ]) {
+            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, `/latest?main_genres=${category}&page={page}`, 'section.container div.grid div.flex > div.px-1 > a', 1);
+            mangaList.push(...mangas);
         }
         return mangaList;
     }
-
-    async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(`${this.apiurl}/api/v1/webtoon/homepage/latest/home?page=${page}`);
-        const { data } = await FetchJSON<APIMangas>(request);
-        return data.map(manga => new Manga(this, provider, String(manga.id), manga.title));
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(`${this.apiurl}/api/v1/webtoon/chapters/${manga.Identifier}-desc`);
-        const data = await FetchJSON<APIChapter[]>(request);
-        return data.map(chapter => new Chapter(this, manga, chapter.id.toString(), `${chapter.name} ${chapter.title || ''}`.trim()));
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(`${this.apiurl}/api/v1/webtoon/chapters/chapter/${chapter.Identifier}`);
-        const data = await FetchJSON<APIPages>(request);
-        return data.chapter.chapterData.webtoon.map(image => new Page(this, chapter, new URL(`/storage/${image}`, this.apiurl)));
-    }
-
 }

@@ -5,10 +5,9 @@ const config = {
         id: 'ruyamanga',
         title: 'Rüya Manga'
     },
-    /* CloudFlare
     container: {
-        url: 'https://www.ruyamanga.com/manga/deli-muhendis/',
-        id: JSON.stringify({ post: '124522', slug: '/manga/deli-muhendis/' }),
+        url: 'https://www.ruya-manga.com/manga/deli-muhendis/',
+        id: JSON.stringify({ post: '126199', slug: '/manga/deli-muhendis/' }),
         title: 'Deli Mühendis'
     },
     child: {
@@ -20,8 +19,7 @@ const config = {
         size: 51_272,
         type: 'image/webp'
     }
-    */
+
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

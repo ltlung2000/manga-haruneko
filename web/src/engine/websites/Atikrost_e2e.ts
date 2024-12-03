@@ -6,7 +6,7 @@ const config = {
         title: 'Atikrost'
     },
     container: {
-        url: 'https://www.atikrost.com/manga/i-am-the-grim-reaper-webtoon-oku/',
+        url: 'https://www.mangaoku.org/manga/i-am-the-grim-reaper-webtoon-oku/',
         id: JSON.stringify({ post: '51', slug: '/manga/i-am-the-grim-reaper-webtoon-oku/' }),
         title: 'I am the Grim Reaper'
     },
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

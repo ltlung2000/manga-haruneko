@@ -5,8 +5,9 @@ const config = {
         id: 'manhwalist',
         title: 'Manhwa List'
     },
+    /* CloudFlare
     container: {
-        url: 'https://manhwalist.com/manga/lookism/',
+        url: 'https://manhwalist.in/manga/lookism/',
         id: '/manga/lookism/',
         title: 'Lookism'
     },
@@ -18,8 +19,7 @@ const config = {
         index: 0,
         size: 95_488,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

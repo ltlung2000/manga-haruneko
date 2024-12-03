@@ -6,12 +6,12 @@ const config: Config = {
         title: 'DrakeScans'
     },
     container: {
-        url: 'https://drakescans.com/series/im-stuck-on-the-same-day-for-a-thousand-years/',
-        id: JSON.stringify({ post: '1239', slug: '/series/im-stuck-on-the-same-day-for-a-thousand-years/'}),
+        url: 'https://drakecomic.org/manga/im-stuck-on-the-same-day-for-a-thousand-years/',
+        id: '/manga/im-stuck-on-the-same-day-for-a-thousand-years/',
         title: 'I’m Stuck On The Same Day For A Thousand Years'
     },
     child: {
-        id: '/series/im-stuck-on-the-same-day-for-a-thousand-years/chapter-1/',
+        id: '/im-stuck-on-the-same-day-for-a-thousand-years-chapter-1/',
         title: 'Chapter 1'
     },
     entry: {
@@ -21,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

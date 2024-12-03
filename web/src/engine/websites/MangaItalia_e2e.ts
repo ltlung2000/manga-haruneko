@@ -6,12 +6,12 @@ const config = {
         title: 'Manga Italia'
     },
     container: {
-        url: 'https://manga-italia.com/manga/4-cut-hero',
+        url: 'https://mangaita.io/manga/4-cut-hero',
         id: '/manga/4-cut-hero',
         title: '4 Cut Hero'
     },
     child: {
-        id: '/book/26099',
+        id: '/scan/26099',
         title: 'Capitolo 52'
     },
     entry: {
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

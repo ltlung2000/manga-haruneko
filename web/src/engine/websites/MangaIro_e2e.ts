@@ -6,12 +6,12 @@ const config = {
         title: 'Mangairo'
     },
     container: {
-        url: 'https://w.mangairo.com/story-aq248676',
-        id: '/story-aq248676',
+        url: 'https://chap.mangairo.com/story-aq248676',
+        id: 'https://chap.mangairo.com/story-aq248676',
         title: 'TSUKI GA MICHIBIKU ISEKAI DOUCHUU'
     },
     child: {
-        id: '/story-aq248676/chapter-82',
+        id: 'https://chap.mangairo.com/story-aq248676/chapter-82',
         title: 'Chapter 82: Ilum Stalker'
     },
     entry: {
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

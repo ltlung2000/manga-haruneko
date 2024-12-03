@@ -1,35 +1,24 @@
 <script lang="ts">
+    import { onMount, onDestroy } from 'svelte';
     import { Toggle } from 'carbon-components-svelte';
     import type { Check } from '../../../../engine/SettingsManager';
     import { Locale } from '../../stores/Settings';
     import SettingItem from './SettingItem.svelte';
 
     export let setting: Check;
-    let current: Check;
-    let value: boolean;
+    let value: boolean = setting.Value;
 
-    $: Update(setting);
+    $: setting.Value = value;
 
-    function Update(setting: Check) {
-        if (current === setting) {
-            return;
-        }
-        if (current) {
-            current.ValueChanged.Unsubscribe(OnValueChangedCallback);
-        }
-        if (setting) {
-            setting.ValueChanged.Subscribe(OnValueChangedCallback);
-        }
-        value = setting.Value;
-        current = setting;
-    }
+    onMount(() => {
+        setting.Subscribe(OnValueChanged);
+    });
+    onDestroy(() => {
+        setting.Unsubscribe(OnValueChanged);
+    });
 
-    function OnValueChangedCallback(sender: Check, args: boolean) {
-        if (sender && sender !== current) {
-            sender.ValueChanged.Unsubscribe(OnValueChangedCallback);
-        } else {
-            value = args;
-        }
+    function OnValueChanged(newValue: boolean) {
+        value = newValue;
     }
 </script>
 
@@ -37,8 +26,5 @@
     labelText={$Locale[setting.Label]()}
     helperText={$Locale[setting.Description]()}
 >
-    <Toggle
-        toggled={value}
-        on:toggle={(evt) => (setting.Value = evt.detail.toggled)}
-    />
+    <Toggle bind:toggled={value} />
 </SettingItem>

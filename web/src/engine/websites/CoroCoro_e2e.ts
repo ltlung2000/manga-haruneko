@@ -6,20 +6,19 @@ const config = {
         title: 'CoroCoro Online (コロコロオンライン)'
     },
     container: {
-        url: 'https://www.corocoro.jp/episode/10044607041237230924',
-        id: '/episode/10044607041237230924',
-        title: 'ぷにるはかわいいスライム'
+        url: 'https://www.corocoro.jp/title/29',
+        id: '/title/29',
+        title: '勝利の女神：NIKKE すいーとえんかうんと'
     },
     child: {
-        id: '/episode/10044607041237230924',
-        title: '[番外編⑪]'
+        id: '/chapter/4934',
+        title: '第1話'
     },
     entry: {
         index: 0,
-        size: 2_014_199,
-        type: 'image/png'
+        size: 169_646,
+        type: 'image/webp'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

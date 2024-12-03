@@ -6,12 +6,12 @@ const config = {
         title: 'NightScans'
     },
     container: {
-        url: 'https://nightscans.net/series/all-football-talents-are-mine/',
-        id: '/series/all-football-talents-are-mine/',
+        url: 'https://nightsup.net/series/4190634673-all-football-talents-are-mine/',
+        id: '/series/4190634673-all-football-talents-are-mine/',
         title: 'All Football Talents Are Mine'
     },
     child: {
-        id: '/all-football-talents-are-mine-chapter-20/',
+        id: '/8781815493-all-football-talents-are-mine-chapter-20/',
         title: 'Chapter 20'
     },
     entry: {
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();
