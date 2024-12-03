@@ -7,19 +7,18 @@ const config: Config = {
     },
     container: {
         url: 'https://hikariscan.org/manga/kaette-kudasai-akutsu-san/',
-        id: '/manga/kaette-kudasai-akutsu-san/',
+        id: JSON.stringify({ post: '20', slug: '/manga/kaette-kudasai-akutsu-san/' }),
         title: 'Kaette Kudasai! Akutsu-san'
     },
     child: {
-        id: '/kaette-kudasai-akutsu-san-1/',
-        title: 'Capítulo 1'
+        id: '/manga/kaette-kudasai-akutsu-san/170/',
+        title: '170'
     },
     entry: {
-        index: 0,
-        size: 595_477,
+        index: 1,
+        size: 501_625,
         type: 'image/jpeg'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

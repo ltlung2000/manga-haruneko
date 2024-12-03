@@ -45,7 +45,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/comics/[^/]+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/comics/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -64,13 +64,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList = [];
         for (let page = 1, run = true; run; page++) {
-            const chapters = await this.getChaptersFromPage(manga, page);
+            const chapters = await this.GetChaptersFromPage(manga, page);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList;
     }
 
-    private async getChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
+    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
         const mangainfos: APIManga = JSON.parse(manga.Identifier);
         const params = new URLSearchParams({
             page: String(page),

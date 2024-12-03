@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Hiper Cool'
     },
     container: {
-        url: 'https://hipercool.xyz/manga/nama-hone-josou/',
+        url: 'https://hiper.cool/manga/nama-hone-josou/',
         id: JSON.stringify({post: '19381', slug: '/manga/nama-hone-josou/' }),
         title: 'Nama-Hone Josou'
     },
@@ -21,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

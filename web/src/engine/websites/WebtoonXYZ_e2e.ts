@@ -9,7 +9,7 @@ const config = {
     container: {
         url: 'https://www.webtoon.xyz/read/the-creator-is-on-hiatus/',
         id: JSON.stringify({ post: '10628', slug: '/read/the-creator-is-on-hiatus/' }),
-        title: 'I’ll Be Taking A Break For Personal Reasons'
+        title: 'Iï¿½ll Be Taking A Break For Personal Reasons'
     },
     child: {
         id: '/read/the-creator-is-on-hiatus/chapter-81/',
@@ -22,5 +22,4 @@ const config = {
     }*/
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

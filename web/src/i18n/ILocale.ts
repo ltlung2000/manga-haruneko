@@ -67,6 +67,8 @@ export enum TagResourceKey {
     Tags_Source_Official = 'Tags_Source_Official',
     Tags_Source_Scanlator = 'Tags_Source_Scanlator',
     Tags_Source_Aggregator = 'Tags_Source_Aggregator',
+    Tags_Accessibility_DomainRotation = 'Tags_Accessibility_DomainRotation',
+    Tags_Accessibility_DomainRotationDescription = 'Tags_Accessibility_DomainRotationDescription',
     Tags_Accessibility_RegionLock = 'Tags_Accessibility_RegionLock',
     Tags_Accessibility_RegionLockDescription = 'Tags_Accessibility_RegionLockDescription',
     Tags_Accessibility_RateLimit = 'Tags_Accessibility_RateLimit',
@@ -169,8 +171,6 @@ export enum FrontendResourceKey {
     Frontend_Classic_Sidenav_Settings_General = 'Frontend_Classic_Sidenav_Settings_General',
     Frontend_Classic_Sidenav_Settings_Interface = 'Frontend_Classic_Sidenav_Settings_Interface',
     Frontend_Classic_Sidenav_Settings_Trackers = 'Frontend_Classic_Sidenav_Settings_Trackers',
-    Frontend_Classic_Sidenav_Settings_Network = 'Frontend_Classic_Sidenav_Settings_Network',
-
 }
 
 // [SECTION]: Frontend: FluentCore
@@ -197,10 +197,6 @@ export enum FrontendResourceKey {
     Frontend_FluentCore_Settings_ShowBookmarksPanel_Description = 'Frontend_FluentCore_Settings_ShowBookmarksPanel_Description',
     Frontend_FluentCore_Settings_ShowDownloadsPanel_Label = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Label',
     Frontend_FluentCore_Settings_ShowDownloadsPanel_Description = 'Frontend_FluentCore_Settings_ShowDownloadsPanel_Description',
-    Frontend_FluentCore_Settings_ShowSplashScreen_Label = 'Frontend_FluentCore_Settings_ShowSplashScreen_Label',
-    Frontend_FluentCore_Settings_ShowSplashScreen_Description = 'Frontend_FluentCore_Settings_ShowSplashScreen_Description',
-    Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label = 'Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Label',
-    Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description = 'Frontend_FluentCore_Settings_ShowFetchBrowserWindows_Description',
 
     Frontend_FluentCore_SettingsDialog_Title = 'Frontend_FluentCore_SettingsDialog_Title',
     Frontend_FluentCore_SettingsDialog_CloseButton_Label = 'Frontend_FluentCore_SettingsDialog_CloseButton_Label',
@@ -255,6 +251,12 @@ export enum EngineResourceKey {
     Settings_Global_MediaDirectory_PermissionError = 'Settings_Global_MediaDirectory_PermissionError',
     Settings_Global_WebsiteSubDirectory = 'Settings_Global_WebsiteSubDirectory',
     Settings_Global_WebsiteSubDirectoryInfo = 'Settings_Global_WebsiteSubDirectoryInfo',
+    Settings_Global_MangaExportFormat = 'Settings_Global_MangaExportFormat',
+    Settings_Global_MangaExportFormatInfo = 'Settings_Global_MangaExportFormatInfo',
+    Settings_Global_MangaExportFormat_FolderWithImages = 'Settings_Global_MangaExportFormat_FolderWithImages',
+    Settings_Global_MangaExportFormat_ComicBookArchive = 'Settings_Global_MangaExportFormat_ComicBookArchive',
+    Settings_Global_MangaExportFormat_ElectronicPublication = 'Settings_Global_MangaExportFormat_ElectronicPublication',
+    Settings_Global_MangaExportFormat_PortableDocumentFormat = 'Settings_Global_MangaExportFormat_PortableDocumentFormat',
     Settings_Global_DescramblingFormat = 'Settings_Global_DescramblingFormat',
     Settings_Global_DescramblingFormatInfo = 'Settings_Global_DescramblingFormatInfo',
     Settings_Global_DescramblingQuality = 'Settings_Global_DescramblingQuality',
@@ -281,6 +283,15 @@ export enum EngineResourceKey {
     Settings_Global_RPCSecret = 'Settings_Global_RPCSecret',
     Settings_Global_RPCSecretInfo = 'Settings_Global_RPCSecretInfo',
 
+    Settings_FeatureFlags_Label = 'Settings_FeatureFlags_Label',
+    Settings_FeatureFlags_Description = 'Settings_FeatureFlags_Description',
+    Settings_FeatureFlags_ShowSplashScreen_Label = 'Settings_FeatureFlags_ShowSplashScreen_Label',
+    Settings_FeatureFlags_ShowSplashScreen_Description = 'Settings_FeatureFlags_ShowSplashScreen_Description',
+    Settings_FeatureFlags_ShowFetchBrowserWindows_Label = 'Settings_FeatureFlags_ShowFetchBrowserWindows_Label',
+    Settings_FeatureFlags_ShowFetchBrowserWindows_Description = 'Settings_FeatureFlags_ShowFetchBrowserWindows_Description',
+    Settings_FeatureFlags_CrowdinTranslationMode_Label = 'Settings_FeatureFlags_CrowdinTranslationMode_Label',
+    Settings_FeatureFlags_CrowdinTranslationMode_Description = 'Settings_FeatureFlags_CrowdinTranslationMode_Description',
+
     SettingsManager_Settings_AlreadyInitializedError = 'SettingsManager_Settings_AlreadyInitializedError',
 
     FetchProvider_FetchGraphQL_AggregateError = 'FetchProvider_FetchGraphQL_AggregateError',
@@ -288,6 +299,9 @@ export enum EngineResourceKey {
     FetchProvider_FetchWindow_TimeoutError = 'FetchProvider_FetchWindow_TimeoutError',
     FetchProvider_FetchWindow_CloudFlareError = 'FetchProvider_FetchWindow_CloudFlareError',
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
+    FetchProvider_Fetch_CloudFlareChallenge = 'FetchProvider_Fetch_CloudFlareChallenge',
+    FetchProvider_Fetch_VercelChallenge = 'FetchProvider_Fetch_VercelChallenge',
+    FetchProvider_Fetch_Forbidden = 'FetchProvider_Fetch_Forbidden',
 
     BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError = 'BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError',
 }
@@ -313,11 +327,27 @@ export enum WebsiteResourceKey {
     Plugin_Common_MangaIndex_NotSupported = 'Plugin_Common_MangaIndex_NotSupported',
     Plugin_Common_Chapter_InvalidError = 'Plugin_Common_Chapter_InvalidError',
     Plugin_Common_Chapter_UnavailableError = 'Plugin_Common_Chapter_UnavailableError',
+    Plugin_Common_Image_MirroredDownloadError = 'Plugin_Common_Image_MirroredDownloadError',
     Plugin_Common_Preferred_Language = 'Plugin_Common_Preferred_Language',
     Plugin_Common_Preferred_LanguageInfo = 'Plugin_Common_Preferred_LanguageInfo',
     Plugin_MissingWebsite_UpdateError = 'Plugin_MissingWebsite_UpdateError',
     Plugin_MissingWebsiteEntry_UpdateError = 'Plugin_MissingWebsiteEntry_UpdateError',
-    Plugin_MissingManga_LanguageMismatchError = 'Plugin_MissingManga_LanguageMismatchError',
+}
+
+// [SECTION]: Website CopyManga
+export enum WebsiteResourceKey {
+    Plugin_CopyManga_Settings_GlobalCDN = 'Plugin_CopyManga_Settings_GlobalCDN',
+    Plugin_CopyManga_Settings_GlobalCDNInfo = 'Plugin_CopyManga_Settings_GlobalCDNInfo',
+}
+
+// [SECTION]: Website CuuTruyen
+export enum WebsiteResourceKey {
+    Plugin_CuuTruyen_Error_NotProcessed = 'Plugin_CuuTruyen_Error_NotProcessed',
+}
+
+// [SECTION]: Website PocketComics
+export enum WebsiteResourceKey {
+    Plugin_PocketComics_LanguageMismatchError = 'Plugin_PocketComics_LanguageMismatchError',
 }
 
 // [SECTION]: Website SheepScanlations
@@ -326,9 +356,6 @@ export enum WebsiteResourceKey {
     Plugin_SheepScanlations_Settings_UsernameInfo = 'Plugin_SheepScanlations_Settings_UsernameInfo',
     Plugin_SheepScanlations_Settings_Password = 'Plugin_SheepScanlations_Settings_Password',
     Plugin_SheepScanlations_Settings_PasswordInfo = 'Plugin_SheepScanlations_Settings_PasswordInfo',
-    Plugin_CopyManga_Settings_GlobalCDN = 'Plugin_CopyManga_Settings_GlobalCDN',
-    Plugin_CopyManga_Settings_GlobalCDNInfo = 'Plugin_CopyManga_Settings_GlobalCDNInfo',
-
 }
 
 export const VariantResourceKey = {

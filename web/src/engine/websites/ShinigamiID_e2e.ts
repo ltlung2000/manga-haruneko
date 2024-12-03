@@ -5,10 +5,10 @@ const config: Config = {
         id: 'shinigamiid',
         title: 'Shinigami ID',
     },
-    /* CloudFlare
+    /* Cloudflare
     container: {
-        url: 'https://shinigami.cx/series/sss-class-suicide-hunter/',
-        id: JSON.stringify({ post: "641", slug: "/series/sss-class-suicide-hunter/" }),
+        url: 'https://shinigami07.com/series/sss-class-suicide-hunter/',
+        id: JSON.stringify({ post: '641', slug: '/series/sss-class-suicide-hunter/' }),
         title: 'SSS-Class Suicide Hunter'
     },
     child: {
@@ -22,5 +22,4 @@ const config: Config = {
     }*/
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

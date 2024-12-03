@@ -8,7 +8,7 @@ const config = {
     container: {
         url: 'https://comic-days.com/episode/14079602755285689668',
         id: '/episode/14079602755285689668',
-        title: 'ＪＪＭ　女子柔道部物語　社会人編'
+        title: 'ＪＪＭ 女子柔道部物語 社会人編',
     },
     child: {
         id: '/episode/14079602755285689668',
@@ -16,10 +16,9 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 2_259_153,
+        size: 2_259_808,
         type: 'image/png'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

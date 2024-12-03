@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Kiryuu'
     },
     container: {
-        url: 'https://kiryuu.id/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/',
+        url: 'https://kiryuu.one/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/',
         id: '/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/',
         title: 'The Modern Era’s Strongest Soldier Conquers Another World’s Dungeon'
     },
@@ -21,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

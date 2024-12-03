@@ -6,7 +6,7 @@ const config = {
         title: 'Infra Fandub'
     },
     container: {
-        url: 'https://infrafandub.xyz/manga/tribu-de-dios/',
+        url: 'https://infrafandub.com/manga/tribu-de-dios/',
         id: JSON.stringify({ post: '977', slug: '/manga/tribu-de-dios/' }),
         title: 'Tribu de dios'
     },
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

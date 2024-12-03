@@ -3,10 +3,10 @@
 const config = {
     plugin: {
         id: 'truyentranhdammy',
-        title: 'TruyenTranhDammy'
+        title: 'Truyện Nhà Meo'
     },
     container: {
-        url: 'https://truyentranhdammyy.net/manga/du-dich-tham-nhap/',
+        url: 'https://truyennhameo.com/manga/du-dich-tham-nhap/',
         id: JSON.stringify({ post: '10506', slug: '/manga/du-dich-tham-nhap/' }),
         title: 'Dụ Địch Thâm Nhập'
     },
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

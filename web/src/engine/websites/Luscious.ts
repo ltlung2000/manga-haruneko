@@ -4,8 +4,6 @@ import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } 
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
-//we do not use FetchGraphQL on purpose, since this website use GET and not POST and ofc pass parameters and query using the url
-
 type APIMangaPage = {
     data: {
         album: {
@@ -43,7 +41,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://apicdn.luscious.net/graphql/nobatch/';
 
     public constructor() {
-        super('luscious', `Luscious`, 'https://www.luscious.net', Tags.Language.Multilingual, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('luscious', `Luscious`, 'https://www.luscious.net', Tags.Media.Comic, Tags.Media.Manga, Tags.Language.Multilingual, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
@@ -51,27 +49,26 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/albums/`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/albums/`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
         const id = uri.pathname.match(/_(\d+)\/?$/)[1];
-        const request = new Request(url);
-        const name = (await FetchCSS(request, 'main h1.album-heading')).pop().textContent.trim();
+        const name = (await FetchCSS(new Request(url), 'main h1.album-heading')).at(-1).textContent.trim();
         return new Manga(this, provider, id, name);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
+        const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this._getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    async _getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const url = new URL(this.apiUrl);
         url.searchParams.set('operationName', 'AlbumList');
         const query = `query AlbumList($input: AlbumListInput!) {
@@ -107,16 +104,16 @@ export default class extends DecoratableMangaScraper {
         };
 
         url.searchParams.set('variables', JSON.stringify(variables));
-        const request = new Request(url.href, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
-        const data = await FetchJSON<APIMangaPage>(request);
-        return data.data.album.list.items.map(manga => new Manga(this, provider, String(manga.id), manga.title.trim()));
+        const request = new Request(url, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
+        const { data: { album: { list: { items } } } } = await FetchJSON<APIMangaPage>(request);
+        return items.map(manga => new Manga(this, provider, String(manga.id), manga.title.trim()));
 
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pagelist = [];
+        const pagelist: Page[]= [];
         for (let page = 1, run = true; run; page++) {
-            const pagesResults = await this._getPagesFromChapterPage(page, chapter);
+            const pagesResults = await this.GetPagesFromChapterPage(page, chapter);
             if (pagesResults.data.picture.list.items.length > 0) {
                 pagesResults.data.picture.list.items.forEach(element => pagelist.push(new Page(this, chapter, new URL(element.url_to_original))));
             }
@@ -125,7 +122,7 @@ export default class extends DecoratableMangaScraper {
         return pagelist;
     }
 
-    private async _getPagesFromChapterPage(page: number, chapter: Chapter): Promise<PagesResult> {
+    private async GetPagesFromChapterPage(page: number, chapter: Chapter): Promise<PagesResult> {
         const url = new URL(this.apiUrl);
         url.searchParams.set('operationName', 'AlbumListOwnPictures');
         const query = `
@@ -156,7 +153,7 @@ export default class extends DecoratableMangaScraper {
             }
         };
         url.searchParams.set('variables', JSON.stringify(variables));
-        const request = new Request(url.href, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
+        const request = new Request(url, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
         return await FetchJSON<PagesResult>(request);
     }
 }

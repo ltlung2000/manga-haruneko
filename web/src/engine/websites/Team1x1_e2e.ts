@@ -6,7 +6,7 @@ const config: Config = {
         title: 'Team X'
     },
     container: {
-        url: 'https://teamxnovel.com/series/villain-is-here',
+        url: 'https://olympustaff.com/series/villain-is-here',
         id: '/series/villain-is-here',
         title: 'Villain Is Here'
     },
@@ -21,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

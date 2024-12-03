@@ -26,7 +26,7 @@ const scriptPageListLinks = `ts_reader_control.getImages();`;
  ******** Manga from URL Extraction Methods ********
  ***************************************************/
 
-function MangaLabelExtractor(this: MangaScraper, element: HTMLElement) {
+export function MangaLabelExtractor(this: MangaScraper, element: HTMLElement) {
     return [
         /^Comic\s+/i,
         /^Komik\s+/i,
@@ -65,6 +65,13 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
  ******** Manga List Extraction Methods ********
  ***********************************************/
 
+function MangaInfosExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
+    return {
+        id: anchor.pathname,
+        title: MangaLabelExtractor.call(this, anchor)
+    };
+}
+
 /**
  * An extension method for extracting multiple mangas from the given relative {@link path} using the given CSS {@link query}.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
@@ -73,7 +80,7 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  */
 export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: MangaPlugin, path = pathname, query = queryMangaListLinks): Promise<Manga[]> {
-    return Common.FetchMangasSinglePageCSS.call(this, provider, path, query);
+    return Common.FetchMangasSinglePageCSS.call(this, provider, path, query, MangaInfosExtractor);
 }
 
 /**
@@ -82,7 +89,7 @@ export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: Man
  * @param path - The path relative to the scraper's base url from which the mangas shall be extracted
  */
 export function MangasSinglePageCSS(query: string = queryMangaListLinks, path: string = pathname) {
-    return Common.MangasSinglePageCSS(path, query);
+    return Common.MangasSinglePageCSS(path, query, MangaInfosExtractor);
 }
 
 /*************************************************
@@ -157,7 +164,7 @@ function ChapterPageExtractor(this: MangaScraper, image: HTMLImageElement): stri
  */
 export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, exclude: RegExp[] = [], query = queryPageListLinks): Promise<Page[]> {
     const pages = await Common.FetchPagesSinglePageCSS.call(this, chapter, query, ChapterPageExtractor.bind(this));
-    return pages.filter(page => !exclude.some(pattern => pattern.test(page.Link.pathname)));
+    return pages.filter(page => exclude.none(pattern => pattern.test(page.Link.pathname)));
 }
 
 /**
@@ -188,7 +195,7 @@ export function PagesSinglePageCSS(exclude: RegExp[] = [], query = queryPageList
  */
 export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, exclude: RegExp[] = [], script = scriptPageListLinks, delay = 2500): Promise<Page[]> {
     const pages = await Common.FetchPagesSinglePageJS.call(this, chapter, script, delay);
-    return pages.filter(page => !exclude.some(pattern => pattern.test(page.Link.pathname)));
+    return pages.filter(page => exclude.none(pattern => pattern.test(page.Link.pathname)));
 }
 
 /**

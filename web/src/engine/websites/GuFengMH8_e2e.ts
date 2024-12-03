@@ -6,7 +6,7 @@ const config = {
         title: '古风漫画网 (GuFengMH8)'
     },
     container: {
-        url: 'https://www.gufengmh9.com/manhua/moshifanren/',
+        url: 'https://www.gufengmh.com/manhua/moshifanren/',
         id: '/manhua/moshifanren/',
         title: '末世凡人'
     },
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

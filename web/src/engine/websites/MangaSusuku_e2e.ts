@@ -6,7 +6,7 @@ const config = {
         title: 'MangaSusuku'
     },
     container: {
-        url: 'https://mangasusuku.xyz/komik/strawberry-market/',
+        url: 'https://mangasusuku.com/komik/strawberry-market/',
         id: '/komik/strawberry-market/',
         title: 'Strawberry Market'
     },
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

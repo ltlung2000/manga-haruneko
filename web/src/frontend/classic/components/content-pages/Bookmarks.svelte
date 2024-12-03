@@ -21,7 +21,7 @@
 
 <div id="bookmarkspage" in:fade>
     <Tile id="bookmarks" class="border">
-        {#each window.HakuNeko.BookmarkPlugin.Entries as bookmark (bookmark)}
+        {#each window.HakuNeko.BookmarkPlugin.Entries.Value as bookmark (bookmark)}
             <ClickableTile
                 class="suggesttile"
                 light
@@ -35,7 +35,7 @@
                         <span title={bookmark.Title}>{bookmark.Title}</span>
                     </Tag>
 
-                    {#await bookmark.getUnflaggedContent() then value}
+                    {#await bookmark.GetUnflaggedContent() then value}
                         {#if value.length > 0}
                             <Tag
                                 class="suggestcount"

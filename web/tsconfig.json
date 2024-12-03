@@ -6,13 +6,15 @@
         "target": "ESNext",
         "module": "ESNext",
         "moduleResolution": "bundler",
+        "skipLibCheck": true,
         "verbatimModuleSyntax": true,
         "forceConsistentCasingInFileNames": true,
         "jsx": "react",
         "noEmit": true,
         "strictBindCallApply": true,
         "experimentalDecorators": true,
-        "useDefineForClassFields": false
+        "useDefineForClassFields": false,
+        "types": [ "chrome", "nw.js", "wicg-file-system-access" ]
     },
     "include": [
         "src/**/*.d.ts",

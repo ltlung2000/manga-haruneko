@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Loading } from 'carbon-components-svelte';
+    import { InlineNotification, Loading } from 'carbon-components-svelte';
     import type { MediaContainer, MediaItem } from '../../../../engine/providers/MediaPlugin';
     import ImageViewer from './ImageViewer.svelte';
     import VideoViewer from './VideoViewer.svelte';
@@ -19,6 +19,9 @@
     $: refresh(item);
     async function refresh(item: MediaContainer<MediaItem>) {
         updating = item.Update();
+        updating.catch(() => {
+            displayedItem=undefined;
+        });
         await updating;
         displayedItem = item;
     }
@@ -29,37 +32,13 @@
     }
     function onNextItem() {
         currentImageIndex = -1;
-        if (wide && !$selectedItemNext) markAsCurrent(item);
+        if (wide && !$selectedItemNext) HakuNeko.ItemflagManager.FlagItem(item, FlagType.Current);
         $selectedItem = $selectedItemNext;
     }
     function onClose() {
-        markAsCurrent(item);
+        HakuNeko.ItemflagManager.FlagItem(item, FlagType.Current);
     }
 
-    async function markAsCurrent(itemtoflag: MediaContainer<MediaItem>) {
-        let currentIndex = -1;
-        let itemtoflagIndex = -1;
-        const flags = await HakuNeko.ItemflagManager.GetContainerItemsFlags(
-            itemtoflag.Parent
-        );
-
-        await Promise.all(
-            item.Parent.Entries.map(async (entry, index) => {
-                if (entry.IsSameAs(itemtoflag))
-                    itemtoflagIndex = index;
-                const flag = await HakuNeko.ItemflagManager.GetItemFlagType(
-                    entry
-                );
-                if (flag === FlagType.Current) currentIndex = index;
-            })
-        );
-
-        const isCurrentBookmarkAfter = itemtoflagIndex < currentIndex;
-        HakuNeko.ItemflagManager.FlagItem(
-            itemtoflag,
-            isCurrentBookmarkAfter ? FlagType.Current : FlagType.Viewed
-        );
-    }
     let wide = false;
 </script>
 
@@ -70,7 +49,11 @@
             <div class="center">... items</div>
         </div>
     {:catch error}
-        <p class="info error">Unable to load item : {error.detail}</p>
+        <InlineNotification
+        title="{error.name}"
+        subtitle="Unable to load item : {error.message}"
+        class="info error"
+        />
     {/await}
     {#if displayedItem}
         {#key displayedItem}
@@ -79,9 +62,9 @@
                     item={displayedItem}
                     {currentImageIndex}
                     bind:wide
-                    on:nextItem={onNextItem}
-                    on:previousItem={onPreviousItem}
-                    on:close={onClose}
+                    {onNextItem}
+                    {onPreviousItem}
+                    {onClose}
                 />
             {:else if mode === 'Video'}
                 <VideoViewer />

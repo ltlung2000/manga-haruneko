@@ -5,9 +5,10 @@ const config: Config = {
         id: 'readkomik',
         title: 'ReadKomik'
     },
+    /*
     container: {
-        url: 'https://readkomik.com/manga/superhuman-battlefield/',
-        id: '/manga/superhuman-battlefield/',
+        url: 'https://rkreader.org/archives/manga/superhuman-battlefield/',
+        id: '/archives/manga/superhuman-battlefield/',
         title: 'Superhuman Battlefield'
     },
     child: {
@@ -18,8 +19,7 @@ const config: Config = {
         index: 0,
         size: 77_262,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

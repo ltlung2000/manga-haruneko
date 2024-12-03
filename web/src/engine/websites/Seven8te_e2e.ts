@@ -6,7 +6,7 @@ const config = {
         title: '78te (特漫网)'
     },
     container: {
-        url: 'https://www.17te.com/cartoon/581',
+        url: 'https://www.70te.com/cartoon/581',
         id: '/cartoon/581',
         title: '家庭教师()'
     },
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

@@ -6,7 +6,7 @@ const config: Config = {
         title: 'ManhwaIndo'
     },
     container: {
-        url: 'https://manhwaindo.id/series/9th-class-sword-master/',
+        url: 'https://manhwaindo.one/series/9th-class-sword-master/',
         id: '/series/9th-class-sword-master/',
         title: '9th Class Sword Master'
     },
@@ -21,5 +21,4 @@ const config: Config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

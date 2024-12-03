@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const fixture = new TestFixture({
+new TestFixture({
     plugin: {
         id: 'mangakakalot',
         title: 'MangaKakalot'
@@ -19,5 +19,4 @@ const fixture = new TestFixture({
         size: 2_216_516,
         type: 'image/jpeg'
     }
-});
-describe(fixture.Name, () => fixture.AssertWebsite());
+}).AssertWebsite();

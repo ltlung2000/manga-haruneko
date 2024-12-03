@@ -6,7 +6,7 @@ const config = {
         title: 'مانجا ليك (Mangalek)'
     },
     container: {
-        url: 'https://manga-lek.net/manga/against-the-gods/',
+        url: 'https://lekmanga.net/manga/against-the-gods/',
         id: JSON.stringify({ post: '47', slug: '/manga/against-the-gods/' }),
         title: 'Against The Gods'
     },
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

@@ -3,7 +3,6 @@
     import 'carbon-components-svelte/css/all.css';
     import './theme/hakuneko.css';
     import './theme/global.css';
-    import './theme/sidenav-hack.css';
     import { Content } from 'carbon-components-svelte';
     // Svelte
     import { fade } from 'svelte/transition';
@@ -41,7 +40,7 @@
 
 <Theme theme={$ThemeSetting}>
     <AppBar
-        on:home={() => {
+        onHome={() => {
             $selectedItem = null;
             $contentscreen = '/';
         }}
@@ -68,11 +67,6 @@
 </Theme>
 
 <style>
-    @font-face {
-        font-family: 'BabelStoneFlags';
-        src: url('/BabelStoneFlags.woff2') format('woff');
-        font-style: normal;
-    }
     :global(::-webkit-scrollbar) {
         width: 1em; /* Necessary so scrollbar changes from default*/
     }
@@ -110,6 +104,7 @@
     }
     #Bottom {
         grid-area: Bottom;
+        margin-bottom:1em;
     }
     :global(#Header) {
         -webkit-app-region: drag;

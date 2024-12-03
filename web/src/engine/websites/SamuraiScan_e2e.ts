@@ -6,12 +6,12 @@ const config = {
         title: 'Samurai Scan'
     },
     container: {
-        url: 'https://samuraiscan.com/leer/star-martial-god-technique/',
-        id: JSON.stringify({ post: '126', slug: '/leer/star-martial-god-technique/' }),
-        title: 'Star Martial God Technique'
+        url: 'https://latan.visorsmr.com/dl/camino-celestial-del-maestro-marcial-estelar/',
+        id: JSON.stringify({ post: '39', slug: '/dl/camino-celestial-del-maestro-marcial-estelar/' }),
+        title: 'Camino Celestial del Maestro Marcial Estelar'
     },
     child: {
-        id: '/leer/star-martial-god-technique/capitulo-1/',
+        id: '/dl/camino-celestial-del-maestro-marcial-estelar/capitulo-1/',
         title: 'Capitulo 1',
     },
     entry: {
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

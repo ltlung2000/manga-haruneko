@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangadex',
         title: 'MangaDex'
@@ -19,7 +19,4 @@ const config = {
         size: 290_930,
         type: 'image/jpeg'
     }
-};
-
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+}).AssertWebsite();

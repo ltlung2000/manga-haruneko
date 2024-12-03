@@ -1,8 +1,5 @@
-import { Exception } from '../../Error';
-import { EngineResourceKey as R } from '../../../i18n/ILocale';
-import { FetchProvider, type ScriptInjection } from '../FetchProviderCommon';
-import { FetchRedirection } from '../AntiScrapingDetection';
-import { CheckAntiScrapingDetection } from './AntiScrapingDetection';
+import { FetchProvider } from '../FetchProviderCommon';
+import type { FeatureFlags } from '../../FeatureFlags';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -12,20 +9,23 @@ const fetchApiForbiddenHeaders = [
     'Cookie',
     'Origin',
     'Host',
-    'Sec-Fetch-Dest'
+    'Sec-Fetch-Mode',
+    'Sec-Fetch-Dest',
 ];
 
 async function UpdateCookieHeader(url: string, headers: Headers) {
-    const name = fetchApiSupportedPrefix + 'Cookie';
-    const value = headers.get(name);
-    const cookies = value ? value.split(';').map(cookie => cookie.trim()) : [];
-    const browserCookies = await chrome.cookies.getAll({ url });
+    // TODO: Skip cookie assignment in browser window?
+    const cookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
+    const headerCookies = headers.get(cookieHeaderName)?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
+    const browserCookies = await chrome.cookies.getAll({ url, partitionKey: {} }); // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
     for(const browserCookie of browserCookies) {
-        if(!cookies.some(cookie => cookie.startsWith(browserCookie.name + '='))) {
-            cookies.push(`${browserCookie.name}=${browserCookie.value}`);
+        if(headerCookies.none(cookie => cookie.startsWith(browserCookie.name + '='))) {
+            headerCookies.push(`${browserCookie.name}=${browserCookie.value}`);
         }
     }
-    headers.set(name, cookies.join('; '));
+    if(headerCookies.length > 0) {
+        headers.set(cookieHeaderName, headerCookies.join('; '));
+    }
 }
 
 function ConcealHeaders(init: HeadersInit): Headers {
@@ -54,9 +54,6 @@ function RevealHeaders(headers: chrome.webRequest.HttpHeader[]): chrome.webReque
 function ModifyRequestHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
 
     let headers = RevealHeaders(details.requestHeaders ?? []);
-
-    // TODO: set cookies from chrome matching the details.url?
-    //       const cookies: chrome.cookies.Cookie[] = await new Promise(resolve => chrome.cookies.getAll({ url: details.url }, resolve));
 
     headers = headers.filter(header => {
         return header.name.toLowerCase() !== 'referer' || !header.value?.startsWith(window.location.origin);
@@ -90,7 +87,9 @@ export default class extends FetchProvider {
      * Configure various system globals to bypass FetchAPI limitations.
      * This method can only be run once for all instances.
      */
-    public Initialize() {
+    public Initialize(featureFlags: FeatureFlags) {
+
+        super.Initialize(featureFlags);
 
         // Abuse the global Request type to check if system is already initialized
         if(globalThis.Request === FetchRequest) {
@@ -131,171 +130,8 @@ export default class extends FetchProvider {
     public async Fetch(request: Request): Promise<Response> {
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         await UpdateCookieHeader(request.url, request.headers);
-        return fetch(request);
-    }
-
-    public async FetchWindow(request: Request, timeout: number, preload: ScriptInjection<void> = () => undefined): Promise<NWJS_Helpers.win> {
-
-        // TODO: Handle abort signals
-        //request.signal.addEventListener('abort', () => undefined);
-        //if(request.signal.aborted) { /* */ }
-
-        const options: NWJS_Helpers.WindowOpenOption & { mixed_context: boolean } = {
-            new_instance: false, // TODO: Would be safer when set to TRUE, but this would prevent sharing cookies ...
-            mixed_context: false,
-            show: this.IsVerboseModeEnabled,
-            position: 'center',
-            width: 1280,
-            height: 720,
-            //inject_js_start: 'filename'
-            //inject_js_end: 'filename'
-        };
-
-        return await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(request.url, options, win => {
-
-            const invocations: {
-                name: string;
-                info: string
-            }[] = [];
-
-            invocations.push({ name: 'nw.Window.open()', info: `Request URL: ${request.url}, Window URL: ${win?.window?.location.href}`});
-
-            function destroy() {
-                teardownOpenedWindow();
-                reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
-            }
-
-            let cancellation = setTimeout(destroy, timeout);
-            let teardownOpenedWindow = () => {};
-
-            let performRedirectionOrFinalize = async () => {
-                try {
-                    const redirect = await CheckAntiScrapingDetection(win);
-                    invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[redirect]}`});
-                    switch (redirect) {
-                        case FetchRedirection.Interactive:
-                            // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
-                            clearTimeout(cancellation);
-                            cancellation = setTimeout(destroy, 150_000);
-                            win.show();
-                            win.requestAttention(3);
-                            break;
-                        case FetchRedirection.Automatic:
-                            break;
-                        default:
-                            teardownOpenedWindow();
-                            resolve(win);
-                            break;
-                    }
-                } catch(error) {
-                    teardownOpenedWindow();
-                    reject(error);
-                }
-            };
-
-            if(!win.window || nw.Window.get().window === win.window) {
-                invocations.push({ name: 'win.reload()', info: `DOM Window: ${win.window}`});
-                win.reload();
-            } else {
-                win.eval(null, preload instanceof Function ? `(${preload})()` : preload);
-                //preload(win.window.window, win.window.window);
-                //PreventDialogs(win, win.window.window);
-            }
-
-            win.on('document-start', (frame: typeof window) => {
-                invocations.push({ name: `win.on('document-start')`, info: `Window URL: '${win.window?.location?.href}' / Frame URL: '${frame?.location?.href}'` });
-                if(win.window === frame) {
-                    //preload(win.window.window, frame);
-                    if (win.window.document.readyState === 'loading') {
-                        win.window.document.addEventListener('DOMContentLoaded', () => {
-                            invocations.push({ name: 'DOMContentLoaded', info: win.window?.location?.href });
-                            performRedirectionOrFinalize();
-                        });
-                    } else {
-                        invocations.push({ name: 'DOMReady', info: win.window?.location?.href });
-                        performRedirectionOrFinalize();
-                    }
-                }
-                //PreventDialogs(win, frame);
-            });
-
-            // NOTE: Use policy to prevent any new popup windows
-            win.on('new-win-policy', (_frame, url, policy) => {
-                invocations.push({ name: `win.on('new-win-policy')`, info: url });
-                policy.ignore();
-            });
-
-            win.on('navigation', (_frame, url, _policy) => {
-                invocations.push({ name: `win.on('navigation')`, info: url });
-                //policy.ignore();
-                win.hide();
-            });
-
-            win.on('loaded', () => {
-                invocations.push({ name: `win.on('loaded')`, info: win.window?.location?.href });
-                if(win.window && win.window !== nw.Window.get().window) {
-                    performRedirectionOrFinalize();
-                }
-            });
-
-            teardownOpenedWindow = () => {
-                clearTimeout(cancellation);
-                performRedirectionOrFinalize = () => Promise.resolve();
-                // NOTE: removing listeners seems to have no effect, probably a bug in NW.js
-                win.removeAllListeners('document-start');
-                win.removeAllListeners('new-win-policy');
-                win.removeAllListeners('navigation');
-                win.removeAllListeners('loaded');
-                win.removeAllListeners();
-                if(!invocations.some(invocation => invocation.name === 'DOMContentLoaded' || invocation.name === 'loaded')) {
-                    console.warn('FetchWindow() timed out without <DOMContentLoaded> or <loaded> event being invoked!', invocations);
-                } else if(this.IsVerboseModeEnabled) {
-                    console.log('FetchWindow()::invocations', invocations);
-                }
-            };
-        }));
-    }
-
-    public async FetchWindowCSS<T extends HTMLElement>(request: Request, query: string, delay = 0, timeout = 60_000): Promise<T[]> {
-        const win = await this.FetchWindow(request, timeout);
-        try {
-            await super.Wait(delay);
-            const dom = win.window.document as Document;
-            return [...dom.querySelectorAll(query)] as T[];
-        } finally {
-            if(!this.IsVerboseModeEnabled) {
-                win.close(true);
-            }
-        }
-    }
-
-    public async FetchWindowScript<T>(request: Request, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
-        return this.FetchWindowPreloadScript(request, () => undefined, script, delay, timeout);
-    }
-
-    public async FetchWindowPreloadScript<T>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
-        const start = Date.now();
-        const win = await this.FetchWindow(request, timeout, preload);
-        const elapsed = Date.now() - start;
-        try {
-            await super.Wait(delay);
-            let result: T | Promise<T>;
-            try {
-                result = win.eval(null, script instanceof Function ? `(${script})()` : script) as unknown as T | Promise<T>;
-            } catch(inner) {
-                const outer = new EvalError('<script>', { cause: inner });
-                console.error(inner, outer);
-                throw outer;
-            }
-            // wait for completion, otherwise finally block will be executed before the result is received
-            return await Promise.race<T>([
-                result,
-                new Promise<T>((_, reject) => setTimeout(reject, timeout - elapsed, new Exception(R.FetchProvider_FetchWindow_TimeoutError)))
-            ]);
-        } finally {
-            if(!this.IsVerboseModeEnabled) {
-                win.close(true);
-            }
-        }
+        const response = await fetch(request);
+        await super.ValidateResponse(response);
+        return response;
     }
 }

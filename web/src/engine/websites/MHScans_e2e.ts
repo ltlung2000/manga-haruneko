@@ -6,12 +6,12 @@ const config = {
         title: 'MHScans'
     },
     container: {
-        url: 'https://mhscans.com/manga/de-un-simple-soldado-a-monarca/',
-        id: JSON.stringify({ post: '1942', slug: '/manga/de-un-simple-soldado-a-monarca/' }),
+        url: 'https://twobluescans.com/series/de-un-simple-soldado-a-monarca/',
+        id: JSON.stringify({ post: '2337', slug: '/series/de-un-simple-soldado-a-monarca/' }),
         title: `De un Simple Soldado a Monarca`
     },
     child: {
-        id: '/manga/de-un-simple-soldado-a-monarca/capitulo-133-5/',
+        id: '/series/de-un-simple-soldado-a-monarca/capitulo-133-5/',
         title: 'Capítulo 133.5'
     },
     entry: {
@@ -21,5 +21,4 @@ const config = {
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

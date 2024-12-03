@@ -1,3 +1,8 @@
+export type { Observable } from './Observable';
+
+/**
+ * @deprecated Use {@link Observable} instead.
+ */
 export class Event<TSender, TArgs> {
 
     private readonly _subscriptions = new Set<(sender: TSender, args: TArgs) => void>();

@@ -6,20 +6,19 @@ const config = {
         title: 'Hunters Scan'
     },
     container: {
-        url: 'https://huntersscan.xyz/manga/civilizacao-de-nebula',
-        id: '9b3be276-e31e-4e85-8f70-085e96661b80',
-        title: 'Civilização de Nebula'
+        url: 'https://hunterscomics.com/series/o-filho-mais-novo-do-mestre-espadachim/',
+        id: JSON.stringify({ post: '9441', slug: '/series/o-filho-mais-novo-do-mestre-espadachim/' }),
+        title: 'O Filho Mais Novo do Mestre Espadachim'
     },
     child: {
-        id: '9b69a878-c2b5-4523-983d-43c716cae509',
-        title: '20'
+        id: '/series/o-filho-mais-novo-do-mestre-espadachim/capitulo-136/',
+        title: 'Capítulo 136'
     },
     entry: {
         index: 0,
-        size: 606_110,
+        size: 508_506,
         type: 'image/webp'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

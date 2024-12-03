@@ -24,7 +24,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/reader/\\d+/episodes/$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/reader/\\d+/episodes/$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -36,15 +36,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList = [];
+        const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.getMangasFromPage(page, provider);
+            const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    private async getMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         const request = new Request(new URL(`/api/reader/episodes?page=${page}`, this.URI).href, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -60,5 +60,4 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.episodes_list li.episodes_item a');
         return data.map(element => new Chapter(this, manga, element.pathname, element.querySelector('span.episodes_strong_text').textContent.trim()));
     }
-
 }

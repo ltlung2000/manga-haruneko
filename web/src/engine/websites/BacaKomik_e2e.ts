@@ -5,8 +5,9 @@ const config: Config = {
         id: 'bacakomik',
         title: 'BacaKomik'
     },
+    /* Region locked : indonesia
     container: {
-        url: 'https://bacakomik.me/komik/tokyo-revengers/',
+        url: 'https://bacakomik.net/komik/tokyo-revengers/',
         id: '/komik/tokyo-revengers/',
         title: 'Tokyo卍Revengers'
     },
@@ -18,8 +19,7 @@ const config: Config = {
         index: 0,
         size: 243_154,
         type: 'image/jpeg'
-    }
+    }*/
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

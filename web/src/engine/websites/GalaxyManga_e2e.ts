@@ -1,25 +1,24 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-const config = {
+const config: Config = {
     plugin: {
         id: 'galaxymanga',
         title: 'Galaxy Manga'
     },
     container: {
-        url: 'https://flixscans.com/series/55601-101-betrayal-of-dignity',
-        id: '101',
-        title: 'Betrayal of Dignity'
+        url: 'https://gxcomic.xyz/series/53488-850-berserk',
+        id: '/series/53488-850-berserk',
+        title: 'Berserk'
     },
     child: {
-        id: '13351',
-        title: '40'
+        id: '/read/webtoon/53488-30402-chapter-1',
+        title: 'فصل 1'
     },
     entry: {
-        index: 0,
-        size: 341_024,
+        index: 4,
+        size: 588_994,
         type: 'image/webp'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

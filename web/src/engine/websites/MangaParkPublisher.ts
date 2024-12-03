@@ -22,11 +22,9 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 function ChapterExtractor(element: HTMLElement) {
-    const num = element.querySelector('div.chapterNumber span').textContent.trim();
-    const title = element.querySelector('div.chapterNumber p.chapterTitle').textContent.trim();
     return {
         id: element.dataset.chapterId,
-        title: (num + ' - ' + title).trim(),
+        title: element.querySelector('.chapterTitle').textContent.trim(),
     };
 }
 
@@ -53,7 +51,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(`/api/chapter/${chapter.Identifier}`, this.URI).href);
+        const request = new Request(new URL(`/api/chapter/${chapter.Identifier}`, this.URI));
         const { data } = await FetchJSON<APIPages>(request);
         return data.chapter.map(page => new Page(this, chapter, new URL(page.images[0].path), { key: page.images[0].key }));
     }
@@ -61,19 +59,18 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal);
         const encrypted = await data.arrayBuffer();
-        const decrypted = this.xor(new Uint8Array(encrypted), page.Parameters.key as string);
+        const decrypted = this.Xor(new Uint8Array(encrypted), page.Parameters.key as string);
         return Common.GetTypedData(decrypted);
     }
 
-    private xor(t: Uint8Array, key: string) {
+    private Xor(sourceArray: Uint8Array, key: string) {
         const e = window.atob(key).split('').map(s => s.charCodeAt(0));
-        const r = t.length;
+        const r = sourceArray.length;
         const i = e.length;
         const o = new Uint8Array(r);
 
         for (let a = 0; a < r; a += 1)
-            o[a] = t[a] ^ e[a % i];
-        return o;
+            o[a] = sourceArray[a] ^ e[a % i];
+        return o.buffer;
     }
-
 }

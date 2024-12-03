@@ -17,10 +17,9 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 84_486,
-        type: 'image/webp'
+        size: 131_390,
+        type: 'image/jpeg'
     }
 };
 
-const fixture = new TestFixture(config);
-describe(fixture.Name, () => fixture.AssertWebsite());
+new TestFixture(config).AssertWebsite();

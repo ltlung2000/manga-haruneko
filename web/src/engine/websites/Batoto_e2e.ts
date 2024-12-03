@@ -1,6 +1,7 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const fixtureWithoutLanguage = new TestFixture({
+// CASE: Invariant Locale
+new TestFixture({
     plugin: {
         id: 'batoto',
         title: 'Batoto (by AnyACG)'
@@ -19,10 +20,10 @@ const fixtureWithoutLanguage = new TestFixture({
         size: 126_808,
         type: 'image/webp'
     }
-});
-describe(fixtureWithoutLanguage.Name, () => fixtureWithoutLanguage.AssertWebsite());
+}).AssertWebsite();
 
-const fixtureWithLanguage = new TestFixture({
+// CASE: Hungarian Locale
+new TestFixture({
     plugin: {
         id: 'batoto',
         title: 'Batoto (by AnyACG)'
@@ -41,5 +42,4 @@ const fixtureWithLanguage = new TestFixture({
         size: 62_432,
         type: 'image/webp'
     }
-});
-describe(fixtureWithLanguage.Name, () => fixtureWithLanguage.AssertWebsite());
+}).AssertWebsite();
